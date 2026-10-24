@@ -1,1 +1,60 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+
+  --color-canvas: #fbf7f4;
+  --color-surface: #ffffff;
+  --color-ink: #211a2e;
+  --color-muted: #6d6478;
+  --color-line: #e8dfd8;
+
+  --color-brand-50: #f5f0ff;
+  --color-brand-100: #ede3ff;
+  --color-brand-200: #dcc8ff;
+  --color-brand-300: #c4a3ff;
+  --color-brand-400: #a875ff;
+  --color-brand-500: #8b4bf6;
+  --color-brand-600: #7431e0;
+  --color-brand-700: #5f24bd;
+  --color-brand-800: #4e1f99;
+  --color-brand-900: #3f1b7a;
+
+  --color-accent-100: #ffe8e2;
+  --color-accent-300: #ffb4a3;
+  --color-accent-500: #f97362;
+  --color-accent-600: #e85a48;
+
+  --color-success-50: #ecfdf5;
+  --color-success-200: #a7f3d0;
+  --color-success-700: #047857;
+
+  --color-danger-50: #fef2f2;
+  --color-danger-200: #fecaca;
+  --color-danger-500: #ef4444;
+  --color-danger-600: #dc2626;
+  --color-danger-700: #b91c1c;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-canvas text-ink antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-brand-200);
+    color: var(--color-ink);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
