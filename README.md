@@ -1,34 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Steam Society · Web
 
-## Getting Started
+Interfaz web de Steam Society, la plataforma de mentorías que acerca a más mujeres a carreras STEAM. Este repositorio contiene solo el frontend; la API vive en `../backend-steam-society`.
 
-First, run the development server:
+## Stack
+
+- Next.js 16.4 (App Router, Turbopack, Cache Components)
+- React 19.3
+- TypeScript
+- Tailwind CSS 4
+- Vitest + Testing Library
+- pnpm
+
+## Requisitos
+
+- Node.js 24 LTS
+- pnpm
+- La API NestJS corriendo en `http://localhost:3000`
+
+## Puesta en marcha
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env.local
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+La web queda en [http://localhost:3001](http://localhost:3001). El backend ya permite ese origen por CORS.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Variables de entorno
 
-## Learn More
+| Variable              | Ejemplo                    | Descripción                                      |
+| --------------------- | -------------------------- | ------------------------------------------------ |
+| `NEXT_PUBLIC_API_URL` | `http://localhost:3000/v1` | URL base de la API, incluyendo el prefijo `/v1`. |
 
-To learn more about Next.js, take a look at the following resources:
+`NEXT_PUBLIC_*` se incrusta en el bundle del navegador: nunca pongas secretos ahí. En producción, frontend y API deben ser same-site por la cookie `SameSite=Lax`; si no, hace falta `SameSite=None; Secure` o un proxy same-origin.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+pnpm dev           # desarrollo en http://localhost:3001
+pnpm build         # build de producción
+pnpm start         # servir el build en http://localhost:3001
+pnpm lint          # ESLint
+pnpm test          # Vitest
+pnpm test:watch    # Vitest en watch
+pnpm format        # Prettier
+pnpm format:check  # comprobar formato
+```
 
-## Deploy on Vercel
+## Autenticación
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+La sesión es una cookie `HttpOnly` emitida por la API (`sid` en desarrollo HTTP, `__Host-sid` en producción). El navegador la envía con `credentials: "include"`; JavaScript no puede leerla.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `AuthProvider` resuelve `GET /v1/me` al cargar la app.
+- `RequireAuth` protege el grupo `(app)`.
+- `RequireGuest` protege el grupo `(auth)` y redirige a la persona autenticada.
+- Redirección por rol: `mentee`/`mentor` → `/dashboard`; `admin` → `/admin`.
+- El registro público solo permite `mentee` y `mentor`. Después de registrar, el frontend inicia sesión automáticamente.
+
+No hay BFF en v1: el navegador llama directamente a la API. Por eso la cookie debe funcionar same-site en producción.
+
+## Estructura
+
+```text
+src/
+  app/
+    (auth)/          # login, registro, recuperación y reset
+    (app)/           # zona autenticada: dashboard y admin
+  components/
+    auth/            # guards y formularios de auth
+    brand/           # logo
+    dashboard/       # vista cliente del dashboard
+    admin/           # vista cliente del panel admin
+    layout/          # cabecera de la app
+    ui/              # botones, campos, alerts, spinner
+  lib/
+    api/             # fetch, errores y módulos por recurso
+    auth/            # contexto de sesión y roles
+  test/              # setup de Vitest
+```
+
+## Contrato de API usado
+
+- `POST /auth/register`
+- `POST /auth/login`
+- `POST /auth/logout`
+- `POST /auth/password/forgot`
+- `POST /auth/password/reset`
+- `GET /me`
+
+Los errores se normalizan en `ApiError` con `status`, `code`, `message` y `details`. Los formularios muestran mensajes de negocio a partir de `code` y dejan que la API sea la autoridad de validación.
+
+## Próximos pasos
+
+1. Wizard de onboarding config-driven (`GET|PUT /v1/me/onboarding`).
+2. Perfil editable (`GET|PUT /v1/me/profile`, `POST /v1/me/profile/submit`).
+3. Vista admin de mentoras (`GET /v1/admin/mentors`, aprobar/rechazar/suspender/reactivar).
+4. Antes de la vista admin, añadir en backend `GET /v1/admin/mentors/:id` con onboarding completo.
