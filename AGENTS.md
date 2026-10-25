@@ -20,7 +20,7 @@ Responde siempre en español. Código, identificadores y mensajes de commit van 
 - Next.js 16.4 con App Router, React 19.3, Tailwind CSS 4.
 - Vitest + Testing Library para tests; Prettier + ESLint para estilo.
 - Fetch directo del navegador a la API con `credentials: "include"`. Sin BFF/proxy en v1.
-- Componentes propios con Tailwind. No shadcn/ui, TanStack Query ni React Hook Form en esta etapa.
+- Componentes propios con Tailwind, organizados con atomic design pragmático: `ui` (átomos), `forms` (moléculas) y carpetas de dominio (organismos). No shadcn/ui, TanStack Query ni React Hook Form en esta etapa; la skill oficial de shadcn se usa como guía de composición y accesibilidad.
 - `src/` y alias `@/*`. Server Components por defecto; `"use client"` solo cuando haga falta estado, efectos o APIs del navegador.
 
 ## Cómo levantar
@@ -58,6 +58,8 @@ pnpm format:check
 - `POST /auth/password/forgot`: responde `202` siempre, exista o no el correo.
 - `POST /auth/password/reset`: `{ token, password }`.
 - `GET /me`: usuario de la sesión; `401 AUTH_REQUIRED` si no hay sesión.
+- `GET /me/onboarding`: configuración de pasos, respuestas, completitud y opciones de áreas/idiomas.
+- `PUT /me/onboarding`: `{ version, answers }`; acepta respuestas parciales y devuelve el estado actualizado.
 
 ## Autenticación y autorización
 
@@ -72,6 +74,7 @@ pnpm format:check
 
 - Español para todo el texto visible. Tono cercano, claro y profesional; nada de copy que prometa funciones que aún no existen.
 - Mobile-first. Usa los tokens de `src/app/globals.css` (`brand`, `accent`, `canvas`, `ink`, `muted`, `line`) antes de inventar colores.
+- Atomic design pragmático: los primitivos van en `components/ui`; las moléculas de formulario en `components/forms`; los organismos de cada dominio en `components/<dominio>`. No muevas componentes existentes solo por estética.
 - Accesibilidad mínima obligatoria: labels asociados, foco visible, `aria-invalid`/`aria-describedby` en errores, botones con texto, contraste suficiente.
 - Formularios: validación client-side simple + mensajes de error de la API. No dupliques reglas de negocio complejas; la API es la autoridad.
 - No cargues datos privados en Server Components sin sesión; en v1 todo lo autenticado es client-side.

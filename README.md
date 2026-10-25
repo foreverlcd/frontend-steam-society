@@ -60,25 +60,40 @@ La sesión es una cookie `HttpOnly` emitida por la API (`sid` en desarrollo HTTP
 
 No hay BFF en v1: el navegador llama directamente a la API. Por eso la cookie debe funcionar same-site en producción.
 
+## Onboarding
+
+El wizard se arma con la configuración que devuelve `GET /v1/me/onboarding`: pasos, preguntas, opciones, áreas e idiomas. El frontend no hardcodea preguntas ni opciones.
+
+- Cada paso se guarda con `PUT /v1/me/onboarding` al continuar. La API acepta respuestas parciales y devuelve el estado actualizado.
+- La completitud sale de `completion.missing`; no se recalcula con reglas duplicadas.
+- Las áreas se eligen en dos niveles: un área principal raíz y subáreas hijas. El idioma se guarda como un array de exactamente un código.
+- La API no permite borrar una respuesta ya guardada (los campos son `optional` pero no `nullable`). El wizard evita enviar valores vacíos y solo permite cambiar un área principal junto con sus nuevas subáreas.
+- El dashboard muestra el progreso y el CTA para continuar o revisar el onboarding.
+
 ## Estructura
 
 ```text
 src/
   app/
     (auth)/          # login, registro, recuperación y reset
-    (app)/           # zona autenticada: dashboard y admin
+    (app)/           # zona autenticada: dashboard, onboarding y admin
   components/
-    auth/            # guards y formularios de auth
-    brand/           # logo
+    ui/              # átomos: botones, campos, badges, progress, alerts
+    forms/           # moléculas: renderer de preguntas del onboarding
+    auth/            # organismos de auth: guards y formularios
+    onboarding/      # organismos del wizard y estado de completitud
     dashboard/       # vista cliente del dashboard
     admin/           # vista cliente del panel admin
-    layout/          # cabecera de la app
-    ui/              # botones, campos, alerts, spinner
+    layout/          # plantilla de la app autenticada
+    brand/           # logo
   lib/
     api/             # fetch, errores y módulos por recurso
     auth/            # contexto de sesión y roles
+    onboarding/      # validación pura, payloads y hook de carga
   test/              # setup de Vitest
 ```
+
+La organización sigue atomic design de forma pragmática: `ui` son átomos, `forms` son moléculas, y `auth`/`onboarding`/`dashboard` son organismos. La skill oficial de shadcn se usa como guía de composición, estados y accesibilidad; el proyecto mantiene sus primitivos propios para no mezclar dos sistemas visuales.
 
 ## Contrato de API usado
 
@@ -88,12 +103,13 @@ src/
 - `POST /auth/password/forgot`
 - `POST /auth/password/reset`
 - `GET /me`
+- `GET /me/onboarding`
+- `PUT /me/onboarding`
 
 Los errores se normalizan en `ApiError` con `status`, `code`, `message` y `details`. Los formularios muestran mensajes de negocio a partir de `code` y dejan que la API sea la autoridad de validación.
 
 ## Próximos pasos
 
-1. Wizard de onboarding config-driven (`GET|PUT /v1/me/onboarding`).
-2. Perfil editable (`GET|PUT /v1/me/profile`, `POST /v1/me/profile/submit`).
-3. Vista admin de mentoras (`GET /v1/admin/mentors`, aprobar/rechazar/suspender/reactivar).
-4. Antes de la vista admin, añadir en backend `GET /v1/admin/mentors/:id` con onboarding completo.
+1. Perfil editable (`GET|PUT /v1/me/profile`, `POST /v1/me/profile/submit`).
+2. Vista admin de mentoras (`GET /v1/admin/mentors`, aprobar/rechazar/suspender/reactivar).
+3. Antes de la vista admin, añadir en backend `GET /v1/admin/mentors/:id` con onboarding completo.

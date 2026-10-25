@@ -1,5 +1,6 @@
 "use client";
 
+import { OnboardingCard } from "@/components/onboarding/onboarding-card";
 import { useAuth } from "@/lib/auth/auth-context";
 import { roleLabel, userStatusLabel } from "@/lib/auth/roles";
 import { cn } from "@/lib/cn";
@@ -37,12 +38,16 @@ export function DashboardView() {
           Hola, {displayName}
         </h1>
         <p className="text-muted mt-3 text-sm leading-6">
-          Tu cuenta ya está lista. Pronto podrás completar tu perfil y empezar a
-          conectar con la comunidad.
+          Tu cuenta ya está lista. Este es tu espacio para avanzar con
+          intención, un paso a la vez.
         </p>
       </header>
 
-      <div className="mt-8 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="mt-8">
+        <OnboardingCard />
+      </div>
+
+      <div className="mt-5 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
         <section className="border-line rounded-3xl border bg-white p-6 shadow-sm">
           <h2 className="text-ink text-base font-semibold">Tu cuenta</h2>
           <dl className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -85,8 +90,8 @@ export function DashboardView() {
           </h2>
           <p className="mt-3 text-sm leading-6 text-white/70">
             {isMentor
-              ? "Completarás tus áreas, experiencia y disponibilidad. Después podrás enviar tu perfil a revisión."
-              : "Completarás tus intereses y objetivos para que podamos recomendarte mentoras afines."}
+              ? "Con tu onboarding listo, el siguiente paso es completar tu perfil, definir disponibilidad y enviarlo a revisión."
+              : "Con tus intereses y objetivos, el siguiente paso es descubrir mentoras afines a lo que buscas."}
           </p>
           <ul className="mt-5 space-y-3 text-sm text-white/80">
             <li className="flex gap-2">
@@ -99,7 +104,7 @@ export function DashboardView() {
               <span aria-hidden="true" className="text-accent-300">
                 •
               </span>
-              Tu perfil siempre editable.
+              Tus respuestas, siempre editables.
             </li>
             <li className="flex gap-2">
               <span aria-hidden="true" className="text-accent-300">
@@ -110,14 +115,6 @@ export function DashboardView() {
           </ul>
         </section>
       </div>
-
-      <section className="border-brand-200 bg-brand-50/60 mt-5 rounded-3xl border border-dashed p-6">
-        <h2 className="text-ink text-sm font-semibold">Siguiente paso</h2>
-        <p className="text-muted mt-1 max-w-2xl text-sm leading-6">
-          El onboarding y la edición de perfil se conectarán en la siguiente
-          entrega. Mientras tanto, tu sesión ya está funcionando.
-        </p>
-      </section>
     </div>
   );
 }
