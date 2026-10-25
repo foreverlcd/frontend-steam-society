@@ -7,6 +7,17 @@ const CODE_MESSAGES: Record<string, string> = {
   INVALID_CREDENTIALS: "Correo o contraseña incorrectos.",
   INVALID_RESET_TOKEN:
     "El enlace de recuperación no es válido o ya expiró. Solicita uno nuevo.",
+  INVALID_ONBOARDING_ANSWERS:
+    "Revisa las respuestas marcadas e inténtalo de nuevo.",
+  ONBOARDING_VERSION_MISMATCH:
+    "Actualizamos el onboarding. Recarga la página para continuar.",
+  INVALID_PRIMARY_AREA: "Elige un área principal válida.",
+  INVALID_SUBAREA: "Las subáreas deben pertenecer al área principal.",
+  INVALID_LANGUAGE: "Elige un idioma válido.",
+  PRIMARY_AREA_REQUIRED: "Elige un área principal antes de las subáreas.",
+  PRIMARY_AREA_REQUIRES_SUBAREAS:
+    "Elige al menos una subárea para tu área principal.",
+  ONBOARDING_INCOMPLETE: "Aún faltan respuestas obligatorias.",
   NETWORK_ERROR:
     "No pudimos conectar con el servidor. Revisa que la API esté disponible.",
   HTTP_429: "Demasiados intentos. Espera un minuto y vuelve a intentarlo.",
