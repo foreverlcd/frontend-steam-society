@@ -95,7 +95,9 @@ src/
 
 La organización sigue atomic design de forma pragmática: `ui` son átomos, `forms` son moléculas, y `auth`/`onboarding`/`dashboard` son organismos. La skill oficial de shadcn se usa como guía de composición, estados y accesibilidad; el proyecto mantiene sus primitivos propios para no mezclar dos sistemas visuales.
 
-## Contrato de API usado
+## Contrato de API cubierto
+
+### Con UI
 
 - `POST /auth/register`
 - `POST /auth/login`
@@ -106,6 +108,13 @@ La organización sigue atomic design de forma pragmática: `ui` son átomos, `fo
 - `GET /me/onboarding`
 - `PUT /me/onboarding`
 
+### Cliente listo, sin UI (1.4)
+
+- `GET|POST /me/offerings`, `PATCH /me/offerings/:id`, `POST /me/offerings/:id/archive`
+- `GET|PUT /me/availability`
+- `GET /mentors/:id/slots?offeringId&from&to` (público)
+- Tipos y funciones en `src/lib/api/scheduling.ts`
+
 Los errores se normalizan en `ApiError` con `status`, `code`, `message` y `details`. Los formularios muestran mensajes de negocio a partir de `code` y dejan que la API sea la autoridad de validación.
 
 ## Próximos pasos
@@ -113,3 +122,4 @@ Los errores se normalizan en `ApiError` con `status`, `code`, `message` y `detai
 1. Perfil editable (`GET|PUT /v1/me/profile`, `POST /v1/me/profile/submit`).
 2. Vista admin de mentoras (`GET /v1/admin/mentors`, aprobar/rechazar/suspender/reactivar).
 3. Antes de la vista admin, añadir en backend `GET /v1/admin/mentors/:id` con onboarding completo.
+4. UI de ofertas, disponibilidad y slots; el cliente de 1.4 ya está listo en `src/lib/api/scheduling.ts`.
