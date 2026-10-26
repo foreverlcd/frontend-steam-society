@@ -138,6 +138,20 @@ describe("getErrorMessage", () => {
     ).toBe("Correo o contraseña incorrectos.");
   });
 
+  it("maps scheduling business codes to Spanish copy", () => {
+    expect(
+      getErrorMessage(
+        new ApiError(403, "MENTOR_NOT_APPROVED", "Mentor not approved"),
+      ),
+    ).toBe("Tu perfil de mentora debe estar aprobado para hacer cambios.");
+
+    expect(
+      getErrorMessage(
+        new ApiError(400, "SLOT_RANGE_TOO_LARGE", "Range too large"),
+      ),
+    ).toBe("Puedes consultar como máximo 90 días.");
+  });
+
   it("falls back to a generic message for unknown errors", () => {
     expect(getErrorMessage(new Error("boom"))).toBe(
       "Ocurrió un error inesperado. Inténtalo de nuevo.",
