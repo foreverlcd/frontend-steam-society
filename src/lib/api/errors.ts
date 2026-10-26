@@ -18,6 +18,20 @@ const CODE_MESSAGES: Record<string, string> = {
   PRIMARY_AREA_REQUIRES_SUBAREAS:
     "Elige al menos una subárea para tu área principal.",
   ONBOARDING_INCOMPLETE: "Aún faltan respuestas obligatorias.",
+  MENTOR_ONLY: "Esta acción solo está disponible para mentoras.",
+  MENTOR_PROFILE_NOT_FOUND: "Completa tu perfil de mentora antes de continuar.",
+  MENTOR_NOT_APPROVED:
+    "Tu perfil de mentora debe estar aprobado para hacer cambios.",
+  OFFERING_NOT_FOUND: "La oferta no existe o ya no está disponible.",
+  OFFERING_ARCHIVED: "Esta oferta está archivada.",
+  INVALID_OFFERING_PRICE:
+    "Una oferta gratuita debe costar 0; una de pago debe tener un precio mayor a 0.",
+  INVALID_CURRENCY: "La moneda debe ser un código ISO 4217 válido.",
+  INVALID_TIMEZONE: "La zona horaria no es válida.",
+  INVALID_AVAILABILITY_RANGE: "Revisa el rango de disponibilidad.",
+  INVALID_SLOT_RANGE: "El rango de fechas no es válido.",
+  SLOT_RANGE_TOO_LARGE: "Puedes consultar como máximo 90 días.",
+  INVALID_AVAILABILITY_RULE: "Hay una regla de disponibilidad inválida.",
   NETWORK_ERROR:
     "No pudimos conectar con el servidor. Revisa que la API esté disponible.",
   HTTP_429: "Demasiados intentos. Espera un minuto y vuelve a intentarlo.",
