@@ -43,7 +43,9 @@ pnpm format:check
 ```
 
 ## Modo de trabajo: ACELERADO
+
 El desarrollador es el único dev y revisa por ETAPA, no por tarea.
+
 - Sigue docs/05-ROADMAP.md etapa por etapa. Encadena las tareas de la etapa SIN pedir confirmación del plan. Solo te detienes en las condiciones de 'Detente y pregunta' o al cerrar la etapa.
 - Una rama por etapa o tema. NUNCA commitees en main, NUNCA push, NUNCA reescribas historia: el desarrollador hace el merge.
 - Calidad obligatoria (no se acelera): build, lint y test, y e2e cuando haya API y base de datos, en verde antes de cerrar. Test primero en reglas de negocio. Tests de invariantes en zonas rojas.
