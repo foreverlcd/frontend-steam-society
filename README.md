@@ -70,6 +70,15 @@ El wizard se arma con la configuración que devuelve `GET /v1/me/onboarding`: pa
 - La API no permite borrar una respuesta ya guardada (los campos son `optional` pero no `nullable`). El wizard evita enviar valores vacíos y solo permite cambiar un área principal junto con sus nuevas subáreas.
 - El dashboard muestra el progreso y el CTA para continuar o revisar el onboarding.
 
+## Panel admin
+
+`/admin` está protegido por rol `admin` y consume la bandeja de mentoras:
+
+- La lista se filtra por estado (`draft`, `pending_review`, `approved`, `rejected`, `suspended` o todas) y pagina con cursor.
+- El detalle muestra perfil, áreas, idiomas, antelación mínima, ventana máxima y todas las respuestas del onboarding con su completitud.
+- Las acciones disponibles dependen del estado: aprobar o rechazar en `pending_review`, suspender en `approved` y reactivar en `suspended`. El rechazo exige un motivo.
+- Un `401` refresca la sesión; un `403` o un error de estado se muestra con el mensaje de negocio de la API.
+
 ## Estructura
 
 ```text
@@ -88,6 +97,7 @@ src/
     brand/           # logo
   lib/
     api/             # fetch, errores y módulos por recurso
+    admin/           # etiquetas y formato de respuestas para revisión
     auth/            # contexto de sesión y roles
     onboarding/      # validación pura, payloads y hook de carga
   test/              # setup de Vitest
@@ -105,11 +115,14 @@ La organización sigue atomic design de forma pragmática: `ui` son átomos, `fo
 - `GET /me`
 - `GET /me/onboarding`
 - `PUT /me/onboarding`
+- `GET /admin/mentors` (`status`, `limit`, `cursor`)
+- `GET /admin/mentors/:id`
+- `POST /admin/mentors/:id/approve|reject|suspend|reactivate`
 
 Los errores se normalizan en `ApiError` con `status`, `code`, `message` y `details`. Los formularios muestran mensajes de negocio a partir de `code` y dejan que la API sea la autoridad de validación.
 
 ## Próximos pasos
 
 1. Perfil editable (`GET|PUT /v1/me/profile`, `POST /v1/me/profile/submit`).
-2. Vista admin de mentoras (`GET /v1/admin/mentors`, aprobar/rechazar/suspender/reactivar).
-3. Antes de la vista admin, añadir en backend `GET /v1/admin/mentors/:id` con onboarding completo.
+2. UI de ofertas, disponibilidad y slots sobre el cliente de 1.4.
+3. Reservas y sesiones (1.5); depende de decisiones pendientes del backend.

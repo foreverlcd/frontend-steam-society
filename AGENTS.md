@@ -48,7 +48,7 @@ pnpm format:check
 - Sesión: cookie `sid` en desarrollo HTTP y `__Host-sid` en producción. Es `HttpOnly` y `SameSite=Lax`; el navegador la envía gracias a `credentials: "include"`.
 - No intentes leer la cookie desde JavaScript ni desde `middleware`/`proxy`: es `HttpOnly`. El guard de sesión es client-side con `GET /v1/me`.
 - Los errores de la API se normalizan en `ApiError` (`status`, `code`, `message`, `details`). Usa `code` para mensajes de negocio; `message` puede ser un array de validación.
-- No inventes endpoints ni campos. Si falta un endpoint (por ejemplo, el detalle admin de una mentora), anótalo y pregunta.
+- No inventes endpoints ni campos. Si falta un endpoint, anótalo y pregunta.
 
 ### Endpoints ya usados
 
@@ -60,6 +60,9 @@ pnpm format:check
 - `GET /me`: usuario de la sesión; `401 AUTH_REQUIRED` si no hay sesión.
 - `GET /me/onboarding`: configuración de pasos, respuestas, completitud y opciones de áreas/idiomas.
 - `PUT /me/onboarding`: `{ version, answers }`; acepta respuestas parciales y devuelve el estado actualizado.
+- `GET /admin/mentors`: bandeja paginada por cursor; filtros `status`, `limit` y `cursor`.
+- `GET /admin/mentors/:id`: `{ mentor, onboarding }` con perfil, `minNoticeHours`, `maxAdvanceDays`, áreas, idiomas y onboarding completo.
+- `POST /admin/mentors/:id/approve|reject|suspend|reactivate`: acciones de revisión; `reject` exige `{ reason }`.
 
 ## Autenticación y autorización
 
