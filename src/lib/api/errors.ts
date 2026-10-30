@@ -18,6 +18,12 @@ const CODE_MESSAGES: Record<string, string> = {
   PRIMARY_AREA_REQUIRES_SUBAREAS:
     "Elige al menos una subárea para tu área principal.",
   ONBOARDING_INCOMPLETE: "Aún faltan respuestas obligatorias.",
+  FORBIDDEN: "No tienes permisos para realizar esta acción.",
+  MENTOR_PROFILE_NOT_FOUND: "No encontramos el perfil de mentora.",
+  MENTOR_STATUS_CONFLICT:
+    "Otra persona actualizó este perfil. Recarga y vuelve a intentarlo.",
+  INVALID_MENTOR_STATUS_TRANSITION:
+    "El perfil ya no está en un estado que permita esta acción. Recarga la bandeja.",
   NETWORK_ERROR:
     "No pudimos conectar con el servidor. Revisa que la API esté disponible.",
   HTTP_429: "Demasiados intentos. Espera un minuto y vuelve a intentarlo.",
