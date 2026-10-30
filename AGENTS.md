@@ -42,6 +42,15 @@ pnpm test
 pnpm format:check
 ```
 
+## Modo de trabajo: ACELERADO
+El desarrollador es el único dev y revisa por ETAPA, no por tarea.
+- Sigue docs/05-ROADMAP.md etapa por etapa. Encadena las tareas de la etapa SIN pedir confirmación del plan. Solo te detienes en las condiciones de 'Detente y pregunta' o al cerrar la etapa.
+- Una rama por etapa o tema. NUNCA commitees en main, NUNCA push, NUNCA reescribas historia: el desarrollador hace el merge.
+- Calidad obligatoria (no se acelera): build, lint y test, y e2e cuando haya API y base de datos, en verde antes de cerrar. Test primero en reglas de negocio. Tests de invariantes en zonas rojas.
+- Ya NO se exigen explicaciones didácticas, ejemplos cotidianos ni la lista 'qué debería poder explicar'.
+- Al cerrar cada etapa, UN informe de máx. 25 líneas: qué se hizo, evidencia (comandos y resultados), decisiones tomadas dentro de lo permitido, riesgos, 'puntos para revisar con lupa' (obligatorio en zonas rojas), pasos de verificación manual y estado de PROGRESS.md.
+- Las decisiones PENDIENTES de docs/07-DECISIONS.md siguen sin tomarse por tu cuenta.
+
 ## Contrato con la API
 
 - La base incluye `/v1`: `NEXT_PUBLIC_API_URL=http://localhost:3000/v1`.
