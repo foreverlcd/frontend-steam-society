@@ -63,6 +63,7 @@ export function ProfileView() {
   const [submitting, setSubmitting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const userId = user?.id;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -79,7 +80,23 @@ export function ProfileView() {
         setOptions(onboarding.options);
 
         if (profile.role === "mentor") {
-          setMentor(profile.profile as MentorProfile | null);
+          setMentor(
+            (profile.profile as MentorProfile | null) ?? {
+              userId: userId ?? "",
+              headline: null,
+              bio: null,
+              yearsExperience: null,
+              country: null,
+              city: null,
+              status: "draft",
+              reviewedAt: null,
+              rejectionReason: null,
+              minNoticeHours: 24,
+              maxAdvanceDays: 60,
+              areas: [],
+              languages: [],
+            },
+          );
         } else {
           setMentee(profile.profile as MenteeProfile | null);
         }
@@ -101,7 +118,7 @@ export function ProfileView() {
       });
 
     return () => controller.abort();
-  }, [refresh]);
+  }, [refresh, userId]);
 
   if (!user) {
     return null;
