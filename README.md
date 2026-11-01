@@ -70,6 +70,16 @@ El wizard se arma con la configuración que devuelve `GET /v1/me/onboarding`: pa
 - La API no permite borrar una respuesta ya guardada (los campos son `optional` pero no `nullable`). El wizard evita enviar valores vacíos y solo permite cambiar un área principal junto con sus nuevas subáreas.
 - El dashboard muestra el progreso y el CTA para continuar o revisar el onboarding.
 
+## Catálogo, reservas y perfil
+
+- `/mentors` es público: búsqueda por texto, área, idioma, país, solo gratuitas y precio máximo; paginación por cursor y estados de carga, vacío y error.
+- `/mentors/[id]` muestra el perfil público, las ofertas activas y los horarios disponibles. Una mentorada autenticada con perfil puede solicitar una reserva 1:1 y dejar un mensaje.
+- El dashboard de mentorada incluye recomendaciones calculadas por `GET /v1/me/recommendations` y accesos a catálogo, reservas y perfil.
+- `/dashboard/bookings` lista reservas por estado. La mentora acepta (con enlace de sesión si es gratuita), rechaza, completa o marca no asistencia; la mentorada cancela solicitudes y reservas.
+- `/dashboard/offerings` y `/dashboard/availability` permiten a la mentora crear/editar/archivar ofertas y reemplazar sus franjas semanales.
+- `/dashboard/profile` edita el perfil de mentora o mentorada, sus áreas e idiomas, y permite enviar el perfil de mentora a revisión.
+- Las reservas de pago quedan en `awaiting_payment`: la pasarela de pagos sigue pendiente (Hito 2). Las ofertas grupales se muestran, pero la reserva grupal aún no está disponible.
+
 ## Panel admin
 
 `/admin` está protegido por rol `admin` y consume la bandeja de mentoras:
@@ -85,20 +95,23 @@ El wizard se arma con la configuración que devuelve `GET /v1/me/onboarding`: pa
 src/
   app/
     (auth)/          # login, registro, recuperación y reset
-    (app)/           # zona autenticada: dashboard, onboarding y admin
+    (app)/           # zona autenticada: dashboard, onboarding, admin y programación
+    mentors/         # catálogo público y detalle de mentora
   components/
     ui/              # átomos: botones, campos, badges, progress, alerts
     forms/           # moléculas: renderer de preguntas del onboarding
     auth/            # organismos de auth: guards y formularios
     onboarding/      # organismos del wizard y estado de completitud
-    dashboard/       # vista cliente del dashboard
+    catalog/         # catálogo público y detalle con reserva
+    dashboard/       # dashboard, recomendaciones, ofertas, disponibilidad, reservas y perfil
     admin/           # vista cliente del panel admin
-    layout/          # plantilla de la app autenticada
+    layout/          # plantillas pública y autenticada
     brand/           # logo
   lib/
     api/             # fetch, errores y módulos por recurso
     admin/           # etiquetas y formato de respuestas para revisión
     auth/            # contexto de sesión y roles
+    catalog/         # formato de nombres, precios, áreas e idiomas
     onboarding/      # validación pura, payloads y hook de carga
   test/              # setup de Vitest
 ```
@@ -117,22 +130,25 @@ La organización sigue atomic design de forma pragmática: `ui` son átomos, `fo
 - `GET /me`
 - `GET /me/onboarding`
 - `PUT /me/onboarding`
+- `GET|PUT /me/profile`
+- `POST /me/profile/submit`
+- `GET /mentors` (`q`, `areaId`, `language`, `country`, `isFree`, `maxPriceMinor`, `currency`, `limit`, `cursor`)
+- `GET /mentors/:id`
+- `GET /mentors/:id/slots?offeringId&from&to`
+- `GET /me/recommendations?limit`
+- `GET|POST /me/offerings`, `PATCH /me/offerings/:id`, `POST /me/offerings/:id/archive`
+- `GET|PUT /me/availability`
+- `POST /bookings`, `GET /bookings`, `GET /bookings/:id`
+- `POST /bookings/:id/accept|decline|cancel|complete|no-show`
 - `GET /admin/mentors` (`status`, `limit`, `cursor`)
 - `GET /admin/mentors/:id`
 - `POST /admin/mentors/:id/approve|reject|suspend|reactivate`
-
-### Cliente listo, sin UI (1.4)
-
-- `GET|POST /me/offerings`, `PATCH /me/offerings/:id`, `POST /me/offerings/:id/archive`
-- `GET|PUT /me/availability`
-- `GET /mentors/:id/slots?offeringId&from&to` (público)
-- Tipos y funciones en `src/lib/api/scheduling.ts`
 
 Los errores se normalizan en `ApiError` con `status`, `code`, `message` y `details`. Los formularios muestran mensajes de negocio a partir de `code` y dejan que la API sea la autoridad de validación.
 
 ## Próximos pasos
 
-1. Perfil editable (`GET|PUT /v1/me/profile`, `POST /v1/me/profile/submit`).
-2. UI de ofertas, disponibilidad y slots sobre el cliente de 1.4.
-3. Reservas y sesiones (1.5); depende de decisiones pendientes del backend.
-4. Vista admin de mentoras ya implementada en `feat/1.3-admin-panel`.
+1. Pasarela de pagos (Hito 2): hoy una reserva de pago aceptada queda en `awaiting_payment` sin forma de confirmarla.
+2. Reserva grupal: el backend solo permite crear reservas 1:1; la UI ya distingue las ofertas grupales.
+3. Revisión senior de reservas y matching, y evaluación humana de recomendaciones.
+4. Prueba de contrato real frontend-API con datos demo (catálogo, slots, reserva, aceptación y perfil).
