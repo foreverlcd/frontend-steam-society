@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { OnboardingCard } from "@/components/onboarding/onboarding-card";
+import { RecommendationsSection } from "@/components/dashboard/recommendations-section";
 import { useAuth } from "@/lib/auth/auth-context";
 import { roleLabel, userStatusLabel } from "@/lib/auth/roles";
 import { cn } from "@/lib/cn";
@@ -46,6 +48,63 @@ export function DashboardView() {
       <div className="mt-8">
         <OnboardingCard />
       </div>
+
+      <div className="mt-5">
+        <RecommendationsSection />
+      </div>
+
+      <nav
+        aria-label="Accesos rápidos"
+        className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+      >
+        {isMentor ? (
+          <>
+            <QuickLink
+              href="/dashboard/profile"
+              title="Mi perfil"
+              description="Edita y envía tu perfil a revisión."
+            />
+            <QuickLink
+              href="/dashboard/offerings"
+              title="Ofertas"
+              description="Crea y archiva tus sesiones."
+            />
+            <QuickLink
+              href="/dashboard/availability"
+              title="Disponibilidad"
+              description="Define tus horarios semanales."
+            />
+            <QuickLink
+              href="/dashboard/bookings"
+              title="Reservas"
+              description="Acepta, rechaza o completa sesiones."
+            />
+          </>
+        ) : (
+          <>
+            <QuickLink
+              href="/mentors"
+              title="Catálogo"
+              description="Explora mentoras y horarios."
+            />
+            <QuickLink
+              href="/dashboard/bookings"
+              title="Mis reservas"
+              description="Revisa el estado de tus sesiones."
+            />
+            <QuickLink
+              href="/dashboard/profile"
+              title="Mi perfil"
+              description="Actualiza tus objetivos e intereses."
+            />
+            <QuickLink
+              href="/onboarding"
+              title="Onboarding"
+              description="Revisa tus respuestas."
+            />
+          </>
+        )}
+      </nav>
 
       <div className="mt-5 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
         <section className="border-line rounded-3xl border bg-white p-6 shadow-sm">
@@ -116,5 +175,27 @@ export function DashboardView() {
         </section>
       </div>
     </div>
+  );
+}
+
+function QuickLink({
+  href,
+  title,
+  description,
+}: {
+  href: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="border-line hover:border-brand-300 hover:bg-brand-50/40 rounded-2xl border bg-white p-4 transition"
+    >
+      <span className="text-ink block text-sm font-semibold">{title}</span>
+      <span className="text-muted mt-1 block text-xs leading-5">
+        {description}
+      </span>
+    </Link>
   );
 }
