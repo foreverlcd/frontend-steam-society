@@ -168,6 +168,11 @@ export function BookingsView() {
           ? "Motivo del rechazo (opcional):"
           : "Motivo de la cancelación (opcional):";
       const reason = window.prompt(label, "");
+
+      if (reason === null) {
+        return;
+      }
+
       const confirmed = window.confirm(
         action === "decline"
           ? "¿Rechazar esta solicitud?"

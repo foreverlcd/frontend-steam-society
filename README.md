@@ -73,6 +73,7 @@ El wizard se arma con la configuración que devuelve `GET /v1/me/onboarding`: pa
 ## Catálogo, reservas y perfil
 
 - `/mentors` es público: búsqueda por texto, área, idioma, país, solo gratuitas y precio máximo; paginación por cursor y estados de carga, vacío y error.
+- Los filtros de área e idioma solo aparecen con sesión iniciada porque sus opciones vienen de `GET /me/onboarding`; el resto de filtros funciona sin sesión. Si se quiere filtrado público completo, hace falta un endpoint público de opciones.
 - `/mentors/[id]` muestra el perfil público, las ofertas activas y los horarios disponibles. Una mentorada autenticada con perfil puede solicitar una reserva 1:1 y dejar un mensaje.
 - El dashboard de mentorada incluye recomendaciones calculadas por `GET /v1/me/recommendations` y accesos a catálogo, reservas y perfil.
 - `/dashboard/bookings` lista reservas por estado. La mentora acepta (con enlace de sesión si es gratuita), rechaza, completa o marca no asistencia; la mentorada cancela solicitudes y reservas.

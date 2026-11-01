@@ -102,6 +102,15 @@ export function AvailabilityView() {
     setFormError(null);
   }
 
+  function handleTimezoneChange(value: string) {
+    setTimezone(value);
+    setRules((current) =>
+      current.map((rule) => ({ ...rule, timezone: value })),
+    );
+    setNotice(null);
+    setFormError(null);
+  }
+
   function removeRule(key: string) {
     setRules((current) => current.filter((rule) => rule.key !== key));
     setNotice(null);
@@ -196,7 +205,7 @@ export function AvailabilityView() {
                 id="availability-timezone"
                 required
                 value={timezone}
-                onChange={(event) => setTimezone(event.target.value)}
+                onChange={(event) => handleTimezoneChange(event.target.value)}
                 placeholder="America/Lima"
               />
               <p className="text-muted text-xs">
