@@ -19,7 +19,10 @@ const CODE_MESSAGES: Record<string, string> = {
     "Elige al menos una subárea para tu área principal.",
   ONBOARDING_INCOMPLETE: "Aún faltan respuestas obligatorias.",
   FORBIDDEN: "No tienes permisos para realizar esta acción.",
+  PROFILE_FIELD_NOT_ALLOWED: "Ese campo no corresponde a tu tipo de perfil.",
+  PROFILE_NOT_APPLICABLE: "Tu rol no tiene un perfil de mentoría.",
   MENTOR_ONLY: "Esta acción solo está disponible para mentoras.",
+  MENTOR_NOT_FOUND: "No encontramos a esa mentora.",
   MENTOR_PROFILE_NOT_FOUND:
     "No encontramos el perfil de mentora. Completa tu perfil antes de continuar.",
   MENTOR_NOT_APPROVED:
@@ -38,6 +41,21 @@ const CODE_MESSAGES: Record<string, string> = {
   INVALID_SLOT_RANGE: "El rango de fechas no es válido.",
   SLOT_RANGE_TOO_LARGE: "Puedes consultar como máximo 90 días.",
   INVALID_AVAILABILITY_RULE: "Hay una regla de disponibilidad inválida.",
+  INVALID_CURSOR: "La página solicitada ya no es válida. Vuelve a buscar.",
+  BOOKING_NOT_FOUND: "No encontramos esa reserva.",
+  BOOKING_FORBIDDEN: "No tienes acceso a esa reserva.",
+  BOOKING_ROLE_NOT_ALLOWED: "Tu rol no permite esa acción sobre la reserva.",
+  BOOKING_SLOT_UNAVAILABLE: "Ese horario ya no está disponible.",
+  BOOKING_SLOT_TAKEN: "Otra persona tomó ese horario. Elige otro.",
+  BOOKING_MENTEE_OVERLAP: "Ya tienes otra reserva en ese horario.",
+  BOOKING_STATUS_CONFLICT:
+    "La reserva cambió de estado. Recarga y vuelve a intentarlo.",
+  BOOKING_EXPIRED: "La solicitud de reserva venció.",
+  INVALID_BOOKING_TRANSITION:
+    "La reserva ya no permite esa acción. Recarga y vuelve a intentarlo.",
+  MENTEE_PROFILE_REQUIRED: "Completa tu perfil de mentorada antes de reservar.",
+  MEETING_URL_REQUIRED:
+    "Agrega el enlace de la sesión para aceptar una reserva gratuita.",
   NETWORK_ERROR:
     "No pudimos conectar con el servidor. Revisa que la API esté disponible.",
   HTTP_429: "Demasiados intentos. Espera un minuto y vuelve a intentarlo.",
