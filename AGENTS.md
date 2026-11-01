@@ -48,7 +48,7 @@ pnpm format:check
 - Sesión: cookie `sid` en desarrollo HTTP y `__Host-sid` en producción. Es `HttpOnly` y `SameSite=Lax`; el navegador la envía gracias a `credentials: "include"`.
 - No intentes leer la cookie desde JavaScript ni desde `middleware`/`proxy`: es `HttpOnly`. El guard de sesión es client-side con `GET /v1/me`.
 - Los errores de la API se normalizan en `ApiError` (`status`, `code`, `message`, `details`). Usa `code` para mensajes de negocio; `message` puede ser un array de validación.
-- No inventes endpoints ni campos. Si falta un endpoint (por ejemplo, el detalle admin de una mentora), anótalo y pregunta.
+- No inventes endpoints ni campos. Si falta un endpoint, anótalo y pregunta.
 
 ### Endpoints ya usados
 
@@ -60,6 +60,27 @@ pnpm format:check
 - `GET /me`: usuario de la sesión; `401 AUTH_REQUIRED` si no hay sesión.
 - `GET /me/onboarding`: configuración de pasos, respuestas, completitud y opciones de áreas/idiomas.
 - `PUT /me/onboarding`: `{ version, answers }`; acepta respuestas parciales y devuelve el estado actualizado.
+- `GET|PUT /me/profile` y `POST /me/profile/submit`.
+- `GET /mentors`: catálogo público; filtros `q`, `areaId`, `language`, `country`, `isFree`, `maxPriceMinor`, `currency`, `limit` y `cursor`.
+- `GET /mentors/:id`: perfil público con ofertas activas; `404 MENTOR_NOT_FOUND` si no es pública.
+- `GET /mentors/:id/slots?offeringId&from&to`: slots disponibles (público, máximo 90 días).
+- `GET /me/recommendations?limit`: recomendaciones de mentorada (máximo 10, por defecto 3).
+- `GET|POST /me/offerings`, `PATCH /me/offerings/:id`, `POST /me/offerings/:id/archive`.
+- `GET|PUT /me/availability`: franjas semanales de la mentora.
+- `POST /bookings`, `GET /bookings`, `GET /bookings/:id`.
+- `POST /bookings/:id/accept|decline|cancel|complete|no-show`.
+- `GET /admin/mentors`: bandeja paginada por cursor; filtros `status`, `limit` y `cursor`.
+- `GET /admin/mentors/:id`: `{ mentor, onboarding }` con perfil, `minNoticeHours`, `maxAdvanceDays`, áreas, idiomas y onboarding completo.
+- `POST /admin/mentors/:id/approve|reject|suspend|reactivate`: acciones de revisión; `reject` exige `{ reason }`.
+
+### Pantallas que consumen el contrato
+
+- `/mentors` y `/mentors/[id]`: catálogo, detalle, slots y solicitud de reserva.
+- `/dashboard`: onboarding, recomendaciones y accesos rápidos por rol.
+- `/dashboard/offerings`, `/dashboard/availability`, `/dashboard/bookings` y `/dashboard/profile`: programación, reservas y perfil.
+- `/admin`: revisión de mentoras.
+
+Las reservas de pago quedan en `awaiting_payment` hasta que exista pasarela (Hito 2). La reserva grupal aún no está disponible en el backend.
 
 ## Autenticación y autorización
 

@@ -50,6 +50,21 @@ export function AppHeader() {
           >
             {homeLabel}
           </Link>
+          {user.role === "mentee" ? (
+            <>
+              <NavLink href="/mentors">Mentoras</NavLink>
+              <NavLink href="/dashboard/bookings">Reservas</NavLink>
+              <NavLink href="/dashboard/profile">Perfil</NavLink>
+            </>
+          ) : null}
+          {user.role === "mentor" ? (
+            <>
+              <NavLink href="/dashboard/offerings">Ofertas</NavLink>
+              <NavLink href="/dashboard/availability">Disponibilidad</NavLink>
+              <NavLink href="/dashboard/bookings">Reservas</NavLink>
+              <NavLink href="/dashboard/profile">Perfil</NavLink>
+            </>
+          ) : null}
         </nav>
 
         <div className="flex items-center gap-3">
@@ -75,5 +90,16 @@ export function AppHeader() {
         </div>
       </div>
     </header>
+  );
+}
+
+function NavLink({ href, children }: { href: string; children: string }) {
+  return (
+    <Link
+      href={href}
+      className="text-muted hover:bg-brand-50 hover:text-ink rounded-lg px-3 py-2 text-sm font-medium transition"
+    >
+      {children}
+    </Link>
   );
 }

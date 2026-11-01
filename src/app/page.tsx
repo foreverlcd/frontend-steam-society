@@ -32,6 +32,12 @@ export default function HomePage() {
         </Link>
         <nav className="flex items-center gap-2">
           <Link
+            href="/mentors"
+            className="text-muted hover:bg-brand-50 hover:text-ink rounded-xl px-3 py-2 text-sm font-medium transition"
+          >
+            Mentoras
+          </Link>
+          <Link
             href="/login"
             className="text-ink hover:bg-brand-50 rounded-xl px-3 py-2 text-sm font-semibold transition"
           >
@@ -74,12 +80,18 @@ export default function HomePage() {
                 Crear mi cuenta
               </Link>
               <Link
-                href="/login"
+                href="/mentors"
                 className={buttonClassName({
                   variant: "secondary",
                   size: "lg",
                   className: "sm:w-auto",
                 })}
+              >
+                Explorar mentoras
+              </Link>
+              <Link
+                href="/login"
+                className="text-muted hover:text-ink self-center px-2 py-2 text-sm font-medium"
               >
                 Ya tengo cuenta
               </Link>
