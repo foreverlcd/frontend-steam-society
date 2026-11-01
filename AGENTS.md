@@ -64,6 +64,13 @@ pnpm format:check
 - `GET /admin/mentors/:id`: `{ mentor, onboarding }` con perfil, `minNoticeHours`, `maxAdvanceDays`, áreas, idiomas y onboarding completo.
 - `POST /admin/mentors/:id/approve|reject|suspend|reactivate`: acciones de revisión; `reject` exige `{ reason }`.
 
+### Cliente listo, sin UI (1.4)
+
+- `GET|POST /me/offerings`, `PATCH /me/offerings/:id`, `POST /me/offerings/:id/archive`.
+- `GET|PUT /me/availability`.
+- `GET /mentors/:id/slots?offeringId&from&to` (público).
+- Tipos y funciones en `src/lib/api/scheduling.ts`; todavía no hay pantallas que los usen.
+
 ## Autenticación y autorización
 
 - `AuthProvider` vive en el layout raíz y resuelve `GET /v1/me` al montar.
