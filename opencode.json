@@ -23,7 +23,9 @@
     { "action": "shell", "resource": "git switch *", "effect": "allow" },
     { "action": "shell", "resource": "git add *", "effect": "allow" },
     { "action": "shell", "resource": "git commit *", "effect": "allow" },
-
+    { "action": "shell", "resource": "git merge *", "effect": "allow" },
+    { "action": "shell", "resource": "git tag backup/*", "effect": "allow" },
+    { "action": "shell", "resource": "git branch -D *", "effect": "deny" },
     { "action": "shell", "resource": "pnpm test *", "effect": "allow" },
     { "action": "shell", "resource": "pnpm build", "effect": "allow" },
     { "action": "shell", "resource": "pnpm lint *", "effect": "allow" },
@@ -35,10 +37,32 @@
       "resource": "docker compose logs *",
       "effect": "allow"
     },
-
+    { "action": "shell", "resource": "pnpm test:e2e", "effect": "allow" },
+    { "action": "shell", "resource": "pnpm format", "effect": "allow" },
+    { "action": "shell", "resource": "pnpm format:check", "effect": "allow" },
+    {
+      "action": "shell",
+      "resource": "pnpm exec prisma migrate dev *",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "pnpm exec prisma migrate deploy",
+      "effect": "allow"
+    },
+    { "action": "shell", "resource": "docker compose up *", "effect": "allow" },
+    {
+      "action": "shell",
+      "resource": "docker compose start *",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "docker compose stop *",
+      "effect": "allow"
+    },
     { "action": "shell", "resource": "rm *", "effect": "deny" },
     { "action": "shell", "resource": "sudo *", "effect": "deny" },
-    { "action": "shell", "resource": "git push *", "effect": "deny" },
     { "action": "shell", "resource": "git reset *", "effect": "deny" },
     { "action": "shell", "resource": "git clean *", "effect": "deny" },
     { "action": "shell", "resource": "git rebase *", "effect": "deny" },
@@ -47,6 +71,29 @@
       "resource": "docker compose down *",
       "effect": "deny"
     },
+    { "action": "shell", "resource": "git push *", "effect": "ask" },
+    { "action": "shell", "resource": "git push origin *", "effect": "allow" },
+    { "action": "shell", "resource": "git push --force*", "effect": "deny" },
+    { "action": "shell", "resource": "git push * --force*", "effect": "deny" },
+    { "action": "shell", "resource": "git push -f*", "effect": "deny" },
+    { "action": "shell", "resource": "git push * -f*", "effect": "deny" },
+    { "action": "shell", "resource": "git push --delete*", "effect": "deny" },
+    { "action": "shell", "resource": "git push * --delete*", "effect": "deny" },
+    { "action": "shell", "resource": "git push * -d *", "effect": "deny" },
+    { "action": "shell", "resource": "git push * :*", "effect": "deny" },
+    { "action": "shell", "resource": "git push * +*", "effect": "deny" },
+    { "action": "shell", "resource": "git push --tags*", "effect": "deny" },
+    { "action": "shell", "resource": "git push * --tags*", "effect": "deny" },
+    { "action": "shell", "resource": "git push --mirror*", "effect": "deny" },
+    { "action": "shell", "resource": "git push * --mirror*", "effect": "deny" },
+    { "action": "shell", "resource": "git push --all*", "effect": "deny" },
+    { "action": "shell", "resource": "git push * --all*", "effect": "deny" },
+    {
+      "action": "shell",
+      "resource": "git push * refs/tags/*",
+      "effect": "deny"
+    },
+
     { "action": "skill", "resource": "*", "effect": "ask" },
     { "action": "skill", "resource": "find-skills", "effect": "deny" },
     { "action": "skill", "resource": "caveman*", "effect": "deny" },
