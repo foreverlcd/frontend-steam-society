@@ -72,6 +72,9 @@ pnpm format:check
 - `GET /admin/mentors`: bandeja paginada por cursor; filtros `status`, `limit` y `cursor`.
 - `GET /admin/mentors/:id`: `{ mentor, onboarding }` con perfil, `minNoticeHours`, `maxAdvanceDays`, áreas, idiomas y onboarding completo.
 - `POST /admin/mentors/:id/approve|reject|suspend|reactivate`: acciones de revisión; `reject` exige `{ reason }`.
+- `GET /payments/config`: `{ enabled, provider }`; si `enabled` es `false` no se muestra el botón Pagar.
+- `POST /payments/checkout`: `{ bookingId }` → `{ checkoutUrl, … }`; el navegador redirige a `checkoutUrl`.
+- `POST /payments/webhooks/fake`: solo desarrollo (`PAYMENTS_PROVIDER=fake`); lo usa `/payments/fake-checkout`.
 
 ### Pantallas que consumen el contrato
 
@@ -80,7 +83,7 @@ pnpm format:check
 - `/dashboard/offerings`, `/dashboard/availability`, `/dashboard/bookings` y `/dashboard/profile`: programación, reservas y perfil.
 - `/admin`: revisión de mentoras.
 
-Las reservas de pago quedan en `awaiting_payment` hasta que exista pasarela (Hito 2). La reserva grupal aún no está disponible en el backend.
+Las reservas de pago quedan en `awaiting_payment` hasta que el módulo de pagos acredita el cobro. Con `PAYMENTS_PROVIDER=disabled` (piloto) no hay botón Pagar; con `fake` el pago se simula en `/payments/fake-checkout`. La reserva grupal aún no está disponible en el backend. `noShowParty` es la persona ausente; el enlace de sesión debe ser `https://`.
 
 ## Autenticación y autorización
 
@@ -112,7 +115,7 @@ Las reservas de pago quedan en `awaiting_payment` hasta que exista pasarela (Hit
 ## Git y alcance
 
 - Una rama por slice (`feat/<tema>`). Commits pequeños en inglés con Conventional Commits.
-- NUNCA commitees en `main`, NUNCA hagas `git push`, NUNCA reescribas historia. El desarrollador revisa `git diff main...HEAD` y hace el merge.
+- Política autónoma (decisión del desarrollador, 2026-11-16), igual que el backend: trabaja en `feat/*`; antes de fusionar crea `git tag backup/pre-merge-<rama>` (local), fusiona en `main` con `--no-ff` solo con build, lint, test y format verdes y publica con `git push origin <rama>`. Nunca force, nunca borrar ramas remotas, nunca tags remotos, nunca reescribir historia.
 - No toques el backend desde este repo. Si un cambio requiere backend, documéntalo y pide decisión.
 - Antes de instalar una dependencia, justifícala (necesidad real, mantenimiento, licencia, tamaño).
 - No leas, imprimas ni edites `.env.local` ni secretos. Usa `.env.example`.
