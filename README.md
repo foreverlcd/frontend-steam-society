@@ -79,7 +79,8 @@ El wizard se arma con la configuración que devuelve `GET /v1/me/onboarding`: pa
 - `/dashboard/bookings` lista reservas por estado. La mentora acepta (con enlace de sesión si es gratuita), rechaza, completa o marca no asistencia; la mentorada cancela solicitudes y reservas.
 - `/dashboard/offerings` y `/dashboard/availability` permiten a la mentora crear/editar/archivar ofertas y reemplazar sus franjas semanales.
 - `/dashboard/profile` edita el perfil de mentora o mentorada, sus áreas e idiomas, y permite enviar el perfil de mentora a revisión.
-- Las reservas de pago quedan en `awaiting_payment`: la pasarela de pagos sigue pendiente (Hito 2). Las ofertas grupales se muestran, pero la reserva grupal aún no está disponible.
+- Las reservas de pago quedan en `awaiting_payment` hasta que se acredita el pago. Si la API tiene pagos activos (`GET /payments/config`), la mentorada ve **Pagar**; en desarrollo (`PAYMENTS_PROVIDER=fake`) el pago se simula en `/payments/fake-checkout`. Las ofertas grupales se muestran, pero la reserva grupal aún no está disponible.
+- Ambas partes pueden reportar inasistencia; la reserva muestra quién faltó.
 
 ## Panel admin
 
@@ -144,6 +145,7 @@ La organización sigue atomic design de forma pragmática: `ui` son átomos, `fo
 - `GET /admin/mentors` (`status`, `limit`, `cursor`)
 - `GET /admin/mentors/:id`
 - `POST /admin/mentors/:id/approve|reject|suspend|reactivate`
+- `GET /payments/config`, `POST /payments/checkout`, `POST /payments/webhooks/fake` (solo desarrollo)
 
 Los errores se normalizan en `ApiError` con `status`, `code`, `message` y `details`. Los formularios muestran mensajes de negocio a partir de `code` y dejan que la API sea la autoridad de validación.
 
