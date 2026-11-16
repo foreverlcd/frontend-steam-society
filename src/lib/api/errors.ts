@@ -56,6 +56,14 @@ const CODE_MESSAGES: Record<string, string> = {
   MENTEE_PROFILE_REQUIRED: "Completa tu perfil de mentorada antes de reservar.",
   MEETING_URL_REQUIRED:
     "Agrega el enlace de la sesión para aceptar una reserva gratuita.",
+  BOOKING_NOT_AWAITING_PAYMENT: "Esta reserva no está pendiente de pago.",
+  PAYMENTS_DISABLED:
+    "El pago en línea todavía no está disponible. Te avisaremos cuando lo esté.",
+  PAYMENT_ALREADY_PAID: "Esta reserva ya está pagada.",
+  PAYMENT_STATUS_CONFLICT:
+    "El pago cambió de estado. Recarga y vuelve a intentarlo.",
+  PAYMENT_PROVIDER_NOT_FOUND: "El medio de pago no está disponible.",
+  INVALID_WEBHOOK: "No pudimos registrar el resultado del pago.",
   NETWORK_ERROR:
     "No pudimos conectar con el servidor. Revisa que la API esté disponible.",
   HTTP_429: "Demasiados intentos. Espera un minuto y vuelve a intentarlo.",
