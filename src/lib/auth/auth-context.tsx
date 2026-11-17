@@ -13,11 +13,28 @@ import {
 import {
   getMe,
   login as loginRequest,
+  loginWithSecondFactor,
   logout as logoutRequest,
   register as registerRequest,
 } from "@/lib/api/auth";
 import { getErrorMessage, isUnauthorized } from "@/lib/api/errors";
-import type { AuthUser, LoginInput, RegisterInput } from "@/lib/api/types";
+import type {
+  AuthUser,
+  LoginInput,
+  LoginResponse,
+  RegisterInput,
+  SecondFactorInput,
+} from "@/lib/api/types";
+
+/** The password step either signs in or asks for the second factor. */
+export type LoginOutcome =
+  { status: "authenticated"; user: AuthUser } | { status: "mfa_required" };
+
+function needsSecondFactor(
+  response: LoginResponse,
+): response is { mfaRequired: true } {
+  return "mfaRequired" in response && response.mfaRequired === true;
+}
 
 export type AuthStatus =
   "loading" | "authenticated" | "unauthenticated" | "error";
@@ -26,8 +43,10 @@ interface AuthContextValue {
   user: AuthUser | null;
   status: AuthStatus;
   error: string | null;
-  login: (input: LoginInput) => Promise<AuthUser>;
-  register: (input: RegisterInput) => Promise<AuthUser>;
+  login: (input: LoginInput) => Promise<LoginOutcome>;
+  /** Second login step; valid for 5 minutes after the password step. */
+  completeSecondFactor: (input: SecondFactorInput) => Promise<AuthUser>;
+  register: (input: RegisterInput) => Promise<LoginOutcome>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
 }
@@ -124,32 +143,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [cancelRefresh]);
 
-  const login = useCallback(
-    async (input: LoginInput): Promise<AuthUser> => {
-      cancelRefresh();
-      const currentUser = await loginRequest(input);
-      setUser(currentUser);
-      setStatus("authenticated");
-      setError(null);
-      return currentUser;
+  const signIn = useCallback((currentUser: AuthUser): AuthUser => {
+    setUser(currentUser);
+    setStatus("authenticated");
+    setError(null);
+    return currentUser;
+  }, []);
+
+  const startSession = useCallback(
+    async (input: LoginInput): Promise<LoginOutcome> => {
+      const response = await loginRequest(input);
+
+      if (needsSecondFactor(response)) {
+        return { status: "mfa_required" };
+      }
+
+      return { status: "authenticated", user: signIn(response) };
     },
-    [cancelRefresh],
+    [signIn],
+  );
+
+  const login = useCallback(
+    async (input: LoginInput): Promise<LoginOutcome> => {
+      cancelRefresh();
+      return startSession(input);
+    },
+    [cancelRefresh, startSession],
+  );
+
+  const completeSecondFactor = useCallback(
+    async (input: SecondFactorInput): Promise<AuthUser> => {
+      cancelRefresh();
+      return signIn(await loginWithSecondFactor(input));
+    },
+    [cancelRefresh, signIn],
   );
 
   const register = useCallback(
-    async (input: RegisterInput): Promise<AuthUser> => {
+    async (input: RegisterInput): Promise<LoginOutcome> => {
       cancelRefresh();
       await registerRequest(input);
-      const currentUser = await loginRequest({
-        email: input.email,
-        password: input.password,
-      });
-      setUser(currentUser);
-      setStatus("authenticated");
-      setError(null);
-      return currentUser;
+      return startSession({ email: input.email, password: input.password });
     },
-    [cancelRefresh],
+    [cancelRefresh, startSession],
   );
 
   const logout = useCallback(async (): Promise<void> => {
@@ -170,11 +206,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       status,
       error,
       login,
+      completeSecondFactor,
       register,
       logout,
       refresh,
     }),
-    [error, login, logout, refresh, register, status, user],
+    [
+      completeSecondFactor,
+      error,
+      login,
+      logout,
+      refresh,
+      register,
+      status,
+      user,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

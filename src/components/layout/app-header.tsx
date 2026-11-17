@@ -65,6 +65,7 @@ export function AppHeader() {
               <NavLink href="/dashboard/profile">Perfil</NavLink>
             </>
           ) : null}
+          <NavLink href="/account/security">Seguridad</NavLink>
         </nav>
 
         <div className="flex items-center gap-3">

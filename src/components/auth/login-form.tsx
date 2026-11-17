@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/text-field";
 import { getErrorMessage } from "@/lib/api/errors";
 import { useAuth } from "@/lib/auth/auth-context";
+import { SecondFactorForm } from "./second-factor-form";
 
 export function LoginForm() {
   const { login } = useAuth();
@@ -14,6 +15,7 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [secondFactorPending, setSecondFactorPending] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -34,12 +36,21 @@ export function LoginForm() {
     setSubmitting(true);
 
     try {
-      await login({ email: trimmedEmail, password });
+      const outcome = await login({ email: trimmedEmail, password });
+
+      if (outcome.status === "mfa_required") {
+        setPassword("");
+        setSecondFactorPending(true);
+      }
     } catch (caught) {
       setError(getErrorMessage(caught));
     } finally {
       setSubmitting(false);
     }
+  }
+
+  if (secondFactorPending) {
+    return <SecondFactorForm onRestart={() => setSecondFactorPending(false)} />;
   }
 
   return (
