@@ -33,14 +33,18 @@ pnpm dev          # http://localhost:3001
 
 La API debe estar en `http://localhost:3000` y el backend ya permite `http://localhost:3001` por CORS. El valor por defecto de `NEXT_PUBLIC_API_URL` es `http://localhost:3000/v1`.
 
-Comandos de verificación antes de cerrar una tarea:
+Verificación antes de cerrar una tarea (un solo comando, salida corta):
 
 ```bash
-pnpm build
-pnpm lint
-pnpm test
-pnpm format:check
+scripts/gate.sh   # límites de arquitectura, lint, format, tests, build y secretos
 ```
+
+## Arnés de agentes
+
+El arnés completo está en `../backend-steam-society/docs/HARNESS.md`: roles, delegación, planes (`docs/exec-plans/`), principios de oro y bitácora. Además:
+- `pnpm lint` incluye `scripts/check-boundaries.mjs`: solo `src/lib/api/client.ts` hace `fetch`, `lib/` no importa UI, `components/ui` no conoce la API ni el dominio, y los componentes no importan rutas. El mensaje de error dice cómo corregir.
+- **Ver la app:** con la API y la web levantadas, `DEMO_PASSWORD=... pnpm ui:shots scripts/ui-plans/smoke.json` guarda capturas, texto de cada pantalla y errores de consola en `.shots/<plan>/`. Para un cambio visual, crea un plan con las pantallas afectadas (escritorio 1280×800 y móvil 390×844) y revisa las capturas antes de darlo por terminado.
+- El mapa visual del sistema está en `../backend-steam-society/docs/FLOWS.md`.
 
 ## Contrato con la API
 
@@ -129,4 +133,4 @@ Las reservas de pago quedan en `awaiting_payment` hasta que el módulo de pagos 
 
 ## Definición de terminado
 
-`pnpm build`, `pnpm lint`, `pnpm test` y `pnpm format:check` en verde; tests para lo nuevo; README/AGENTS actualizados si cambia cómo se levanta o se usa el proyecto; sin TODOs silenciosos (lo pendiente va al README o al PROGRESS del backend si afecta el contrato).
+`scripts/gate.sh` en verde; capturas revisadas si cambió la UI; tests para lo nuevo; README/AGENTS actualizados si cambia cómo se levanta o se usa el proyecto; sin TODOs silenciosos (lo pendiente va al README o al PROGRESS del backend si afecta el contrato).

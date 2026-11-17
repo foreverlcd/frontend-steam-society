@@ -1,0 +1,17 @@
+[
+  { "viewport": [1280, 800] },
+  { "logout": true },
+  { "name": "01-home", "path": "/" },
+  { "name": "02-catalog", "path": "/mentors" },
+  { "name": "03-login", "path": "/login" },
+  { "login": "camila.huaman@demo.steamsociety.local" },
+  { "name": "04-mentee-dashboard", "path": "/dashboard" },
+  { "name": "05-mentee-bookings", "path": "/dashboard/bookings" },
+  { "login": "valeria.quispe@demo.steamsociety.local" },
+  { "name": "06-mentor-dashboard", "path": "/dashboard" },
+  { "name": "07-mentor-availability", "path": "/dashboard/availability" },
+  { "viewport": [390, 844] },
+  { "name": "08-mobile-mentor-bookings", "path": "/dashboard/bookings" },
+  { "logout": true },
+  { "name": "09-mobile-home", "path": "/" }
+]
