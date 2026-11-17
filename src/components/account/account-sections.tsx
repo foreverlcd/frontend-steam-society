@@ -555,9 +555,6 @@ function DataCard({
         ...checked.proof,
         confirmation: DELETE_CONFIRMATION_WORD,
       });
-      // The API already closed every session; forget the user here too.
-      await refresh();
-      router.push("/login");
     } catch (caught) {
       const open = openBookingsCount(caught);
       setError(
@@ -566,7 +563,17 @@ function DataCard({
           : getErrorMessage(caught),
       );
       setSubmitting(false);
+      return;
     }
+
+    // The account is gone: drop the secrets now, not after the refresh.
+    setPassword("");
+    setCode("");
+    setConfirmation("");
+    // The API already closed every session; forget the user here too. A
+    // failed refresh must not keep the person on this page.
+    await refresh().catch(() => undefined);
+    router.push("/login");
   }
 
   return (

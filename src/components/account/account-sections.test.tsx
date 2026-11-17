@@ -227,6 +227,14 @@ describe("AccountSections", () => {
     );
 
     await waitFor(() => expect(navigation.push).toHaveBeenCalledWith("/login"));
+    // The secrets are gone from the form once the account is deleted.
+    expect(
+      (
+        screen.queryByLabelText(
+          "Tu contraseña actual",
+        ) as HTMLInputElement | null
+      )?.value ?? "",
+    ).toBe("");
     expect(accountMocks.deleteAccount).toHaveBeenLastCalledWith({
       password: TEST_PASSWORD,
       confirmation: "ELIMINAR",
