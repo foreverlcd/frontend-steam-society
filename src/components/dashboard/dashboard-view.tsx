@@ -99,7 +99,7 @@ export function DashboardView() {
             />
             <QuickLink
               href="/onboarding"
-              title="Onboarding"
+              title="Tus intereses"
               description="Revisa tus respuestas."
             />
           </>
@@ -149,7 +149,7 @@ export function DashboardView() {
           </h2>
           <p className="mt-3 text-sm leading-6 text-white/70">
             {isMentor
-              ? "Con tu onboarding listo, el siguiente paso es completar tu perfil, definir disponibilidad y enviarlo a revisión."
+              ? "Con tus intereses listos, el siguiente paso es completar tu perfil, definir disponibilidad y enviarlo a revisión."
               : "Con tus intereses y objetivos, el siguiente paso es descubrir mentoras afines a lo que buscas."}
           </p>
           <ul className="mt-5 space-y-3 text-sm text-white/80">
@@ -157,7 +157,7 @@ export function DashboardView() {
               <span aria-hidden="true" className="text-accent-300">
                 •
               </span>
-              Onboarding guiado, paso a paso.
+              Cuéntanos tus intereses, paso a paso.
             </li>
             <li className="flex gap-2">
               <span aria-hidden="true" className="text-accent-300">

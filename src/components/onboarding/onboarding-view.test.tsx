@@ -52,7 +52,7 @@ describe("OnboardingView", () => {
     render(<OnboardingView />);
 
     const submit = await screen.findByRole("button", {
-      name: "Finalizar onboarding",
+      name: "Finalizar cuestionario",
     });
 
     fireEvent.click(submit);
@@ -70,7 +70,7 @@ describe("OnboardingView", () => {
       target: { value: "Lima" },
     });
     fireEvent.click(
-      screen.getByRole("button", { name: "Finalizar onboarding" }),
+      screen.getByRole("button", { name: "Finalizar cuestionario" }),
     );
 
     await waitFor(() => {

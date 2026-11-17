@@ -17,7 +17,7 @@ export function OnboardingCard() {
       <section className="border-line rounded-3xl border bg-white p-5 shadow-sm sm:p-6">
         <div className="text-muted flex items-center gap-3 text-sm">
           <Spinner className="size-4" />
-          <span>Cargando tu onboarding...</span>
+          <span>Cargando tus intereses...</span>
         </div>
       </section>
     );
@@ -27,7 +27,7 @@ export function OnboardingCard() {
     return (
       <section className="border-line rounded-3xl border bg-white p-5 shadow-sm sm:p-6">
         <Alert tone="error">
-          {error ?? "No pudimos cargar tu onboarding."}
+          {error ?? "No pudimos cargar tus intereses."}
         </Alert>
         <Button type="button" className="mt-4" onClick={reload}>
           Reintentar
@@ -61,7 +61,7 @@ export function OnboardingCard() {
         <div className="max-w-2xl">
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-brand-700 text-xs font-semibold tracking-[0.18em] uppercase">
-              Onboarding
+              Tus intereses
             </p>
             <Badge tone={isComplete ? "success" : "brand"}>
               {isComplete
@@ -73,7 +73,7 @@ export function OnboardingCard() {
           <h2 className="text-ink mt-2 text-xl font-semibold tracking-tight">
             {isComplete
               ? "Tus respuestas están guardadas"
-              : "Completa tu onboarding"}
+              : "Completa tus intereses"}
           </h2>
 
           <p className="text-muted mt-2 text-sm leading-6">
@@ -87,7 +87,7 @@ export function OnboardingCard() {
               <Progress
                 value={completed}
                 max={requiredQuestions.length}
-                label="Progreso del onboarding"
+                label="Progreso de tus intereses"
               />
             </div>
           ) : null}
@@ -100,7 +100,7 @@ export function OnboardingCard() {
             className: "shrink-0",
           })}
         >
-          {isComplete ? "Revisar respuestas" : "Continuar onboarding"}
+          {isComplete ? "Revisar respuestas" : "Continuar mis intereses"}
         </Link>
       </div>
     </section>

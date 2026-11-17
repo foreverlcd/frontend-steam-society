@@ -318,7 +318,7 @@ export function CatalogView() {
           </p>
           <p className="mt-2">
             Prueba con otra búsqueda o limpia los filtros. También puedes
-            revisar tus recomendaciones si ya completaste tu onboarding.
+            revisar tus recomendaciones si ya completaste tus intereses.
           </p>
         </div>
       ) : null}

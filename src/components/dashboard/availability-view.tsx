@@ -209,7 +209,7 @@ export function AvailabilityView() {
                 placeholder="America/Lima"
               />
               <p className="text-muted text-xs">
-                Formato IANA, por ejemplo America/Lima.
+                Por ejemplo America/Lima (hora de Perú).
               </p>
             </div>
           </div>

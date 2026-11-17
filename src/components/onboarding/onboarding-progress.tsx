@@ -33,7 +33,7 @@ export function OnboardingProgress({
       <Progress
         value={completedSteps}
         max={totalSteps}
-        label="Progreso del onboarding"
+        label="Progreso de tus intereses"
       />
 
       <ol className="hidden gap-2 sm:grid sm:grid-cols-2 lg:grid-cols-4">

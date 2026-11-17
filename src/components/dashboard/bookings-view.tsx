@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Alert } from "@/components/ui/alert";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClassName } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -124,7 +125,8 @@ export function BookingsView() {
   const [meetingUrls, setMeetingUrls] = useState<Record<string, string>>({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
-  const [paymentsEnabled, setPaymentsEnabled] = useState(false);
+  // null while the payments config is loading.
+  const [paymentsEnabled, setPaymentsEnabled] = useState<boolean | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -136,7 +138,11 @@ export function BookingsView() {
           setPaymentsEnabled(config.enabled);
         }
       })
-      .catch(() => undefined);
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          setPaymentsEnabled(false);
+        }
+      });
 
     return () => controller.abort();
   }, []);
@@ -362,23 +368,27 @@ export function BookingsView() {
         </p>
       </header>
 
-      <div className="mt-6 flex flex-wrap gap-2">
-        {FILTERS.map((option) => (
-          <button
-            key={option.value || "all"}
-            type="button"
-            onClick={() => handleFilterChange(option.value)}
-            aria-pressed={filter === option.value}
-            className={
-              filter === option.value
-                ? "bg-ink rounded-full px-3 py-1.5 text-xs font-semibold text-white"
-                : "border-line text-muted hover:bg-brand-50 rounded-full border bg-white px-3 py-1.5 text-xs font-semibold transition"
-            }
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
+      {paymentsEnabled !== null ? (
+        <div className="mt-6 flex flex-wrap gap-2">
+          {FILTERS.filter(
+            (option) => paymentsEnabled || option.value !== "awaiting_payment",
+          ).map((option) => (
+            <button
+              key={option.value || "all"}
+              type="button"
+              onClick={() => handleFilterChange(option.value)}
+              aria-pressed={filter === option.value}
+              className={
+                filter === option.value
+                  ? "bg-ink rounded-full px-3 py-1.5 text-xs font-semibold text-white"
+                  : "border-line text-muted hover:bg-brand-50 rounded-full border bg-white px-3 py-1.5 text-xs font-semibold transition"
+              }
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       {notice ? (
         <Alert tone="success" className="mt-5">
@@ -406,9 +416,40 @@ export function BookingsView() {
       ) : null}
 
       {status === "ready" && items.length === 0 ? (
-        <p className="border-line text-muted mt-6 rounded-2xl border border-dashed px-5 py-8 text-sm">
-          No hay reservas en este estado.
-        </p>
+        <div className="border-line text-muted mt-6 rounded-2xl border border-dashed px-5 py-8 text-sm">
+          {filter ? (
+            <p>No hay reservas en este estado.</p>
+          ) : role === "mentee" ? (
+            <div className="space-y-3">
+              <p>Aún no tienes reservas.</p>
+              <Link
+                href="/mentors"
+                className={buttonClassName({
+                  variant: "secondary",
+                  size: "sm",
+                })}
+              >
+                Explorar mentoras
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p>
+                Aún no tienes solicitudes. Revisa que tus ofertas y tu
+                disponibilidad estén completas.
+              </p>
+              <Link
+                href="/dashboard/availability"
+                className={buttonClassName({
+                  variant: "secondary",
+                  size: "sm",
+                })}
+              >
+                Ir a disponibilidad
+              </Link>
+            </div>
+          )}
+        </div>
       ) : null}
 
       <ul className="mt-6 space-y-3">
@@ -561,13 +602,15 @@ export function BookingsView() {
             (booking.status === "requested" ||
               booking.status === "awaiting_payment") ? (
               <div className="mt-4 space-y-2">
-                {booking.status === "awaiting_payment" && !paymentsEnabled ? (
+                {booking.status === "awaiting_payment" &&
+                paymentsEnabled === false ? (
                   <p className="text-muted text-xs">
                     El pago en línea todavía no está disponible.
                   </p>
                 ) : null}
                 <div className="flex flex-wrap gap-2">
-                  {booking.status === "awaiting_payment" && paymentsEnabled ? (
+                  {booking.status === "awaiting_payment" &&
+                  paymentsEnabled === true ? (
                     <Button
                       type="button"
                       size="sm"

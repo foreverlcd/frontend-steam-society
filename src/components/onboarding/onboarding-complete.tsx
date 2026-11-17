@@ -24,7 +24,7 @@ export function OnboardingComplete({
           ✓
         </span>
         <p className="text-success-700 mt-5 text-xs font-semibold tracking-[0.18em] uppercase">
-          Onboarding completo
+          Tus intereses están listos
         </p>
         <h1 className="text-ink mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
           Tus respuestas están guardadas

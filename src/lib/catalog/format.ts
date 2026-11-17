@@ -1,4 +1,8 @@
-import type { CatalogMentor, CatalogOffering } from "@/lib/api/catalog";
+import type {
+  CatalogMentor,
+  CatalogOffering,
+  RecommendationOffering,
+} from "@/lib/api/catalog";
 
 export function mentorDisplayName(
   mentor: Pick<CatalogMentor, "firstName" | "lastName">,
@@ -48,4 +52,28 @@ export function formatLanguages(
     mentor.languages.map((language) => language.name).join(" · ") ||
     "Sin idiomas"
   );
+}
+
+export function matchLabel(score: number): string {
+  if (score >= 80) {
+    return "Muy buena coincidencia";
+  }
+
+  if (score >= 60) {
+    return "Buena coincidencia";
+  }
+
+  return "Coincidencia";
+}
+
+export function priceLabel(offerings: RecommendationOffering[]): string {
+  const lowest = offerings.reduce((best, offering) =>
+    offering.priceMinor < best.priceMinor ? offering : best,
+  );
+
+  if (lowest.isFree || lowest.priceMinor === 0) {
+    return "Sesión gratuita";
+  }
+
+  return `Desde ${formatPrice(lowest)}`;
 }

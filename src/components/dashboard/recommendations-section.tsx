@@ -10,7 +10,11 @@ import { getRecommendations, type Recommendation } from "@/lib/api/catalog";
 import { getErrorMessage, isUnauthorized } from "@/lib/api/errors";
 import { isApiError } from "@/lib/api/client";
 import { useAuth } from "@/lib/auth/auth-context";
-import { formatPrice, mentorDisplayName } from "@/lib/catalog/format";
+import {
+  matchLabel,
+  mentorDisplayName,
+  priceLabel,
+} from "@/lib/catalog/format";
 
 type Status = "loading" | "ready" | "empty" | "needs-profile" | "error";
 
@@ -79,8 +83,8 @@ export function RecommendationsSection() {
             Mentoras afines a ti
           </h2>
           <p className="text-muted mt-2 max-w-xl text-sm leading-6">
-            Calculadas con tus áreas, idioma, nivel y disponibilidad del
-            onboarding.
+            Calculadas con las respuestas de tus intereses: áreas, idioma, nivel
+            y disponibilidad.
           </p>
         </div>
         <Link
@@ -100,10 +104,10 @@ export function RecommendationsSection() {
 
       {status === "needs-profile" ? (
         <Alert tone="info" className="mt-5">
-          Completa tu onboarding y tu perfil de mentorada para recibir
+          Completa tus intereses y tu perfil de mentorada para recibir
           recomendaciones.{" "}
           <Link href="/onboarding" className="font-semibold underline">
-            Ir al onboarding
+            Completar mis intereses
           </Link>
           .
         </Alert>
@@ -134,8 +138,8 @@ export function RecommendationsSection() {
                   <h3 className="text-ink text-base font-semibold">
                     {mentorDisplayName(recommendation.mentor)}
                   </h3>
-                  <Badge tone="brand">
-                    {Math.round(recommendation.score)} pts
+                  <Badge tone="brand" className="shrink-0 whitespace-nowrap">
+                    {matchLabel(recommendation.score)}
                   </Badge>
                 </div>
                 <p className="text-muted mt-1 text-xs">
@@ -146,15 +150,7 @@ export function RecommendationsSection() {
                 </p>
                 {recommendation.mentor.offerings.length > 0 ? (
                   <p className="text-brand-700 mt-auto pt-4 text-xs font-semibold">
-                    Desde{" "}
-                    {formatPrice(
-                      recommendation.mentor.offerings.reduce(
-                        (lowest, offering) =>
-                          offering.priceMinor < lowest.priceMinor
-                            ? offering
-                            : lowest,
-                      ),
-                    )}
+                    {priceLabel(recommendation.mentor.offerings)}
                   </p>
                 ) : null}
               </Link>
