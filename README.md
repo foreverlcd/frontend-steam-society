@@ -155,3 +155,14 @@ Los errores se normalizan en `ApiError` con `status`, `code`, `message` y `detai
 2. Reserva grupal: el backend solo permite crear reservas 1:1; la UI ya distingue las ofertas grupales.
 3. Revisión senior de reservas y matching, y evaluación humana de recomendaciones.
 4. Prueba de contrato real frontend-API con datos demo (catálogo, slots, reserva, aceptación y perfil).
+
+## Despliegue
+
+La imagen de producción usa `output: "standalone"` y corre como usuario no root en el puerto 3001.
+
+```bash
+docker build --build-arg NEXT_PUBLIC_API_URL=https://api.example.com/v1 -t steam-society-web .
+docker run --rm -p 3001:3001 steam-society-web
+```
+
+`NEXT_PUBLIC_API_URL` es pública y Next la incrusta en el bundle durante el build: se pasa con `--build-arg` (por defecto `http://localhost:3000/v1`) y cambiarla exige reconstruir la imagen. No metas secretos en ella. La CI (`.github/workflows/ci.yml`) corre `scripts/gate.sh` y un `docker build` sin publicar.
