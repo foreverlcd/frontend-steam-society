@@ -80,6 +80,16 @@ const CODE_MESSAGES: Record<string, string> = {
     "Tu rol debe mantener la verificación en dos pasos activa.",
   MFA_ENROLLMENT_REQUIRED:
     "Activa la verificación en dos pasos para usar el panel de administración.",
+  MFA_CODE_REQUIRED: "Ingresa también el código de tu app de autenticación.",
+  PASSWORD_BREACHED:
+    "Esa contraseña apareció en filtraciones de datos conocidas. Elige otra.",
+  EMAIL_UNCHANGED: "Ese ya es tu correo actual.",
+  SESSION_NOT_FOUND: "Esa sesión ya estaba cerrada. Recarga la lista.",
+  INVALID_SESSION_ID: "No reconocemos esa sesión. Recarga la lista.",
+  ACCOUNT_HAS_OPEN_BOOKINGS:
+    "Tienes reservas pendientes. Cancélalas o espera a que terminen antes de eliminar tu cuenta.",
+  ADMIN_SELF_DELETE_FORBIDDEN:
+    "Las cuentas de administración no se pueden eliminar desde aquí.",
   NETWORK_ERROR:
     "No pudimos conectar con el servidor. Revisa que la API esté disponible.",
   HTTP_429: "Demasiados intentos. Espera un minuto y vuelve a intentarlo.",

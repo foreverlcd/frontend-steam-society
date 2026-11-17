@@ -60,6 +60,13 @@ La sesión es una cookie `HttpOnly` emitida por la API (`sid` en desarrollo HTTP
 
 No hay BFF en v1: el navegador llama directamente a la API. Por eso la cookie debe funcionar same-site en producción.
 
+## Seguridad de la cuenta (`/account/security`)
+
+- **Verificación en dos pasos** (`security-view.tsx`): activar con app, códigos de recuperación, desactivar (el admin no puede).
+- **Sesiones, contraseña, correo y datos** (`account-sections.tsx`): lista de sesiones activas (cerrar una o todas las demás), cambio de contraseña y de correo, descarga de datos en JSON y eliminación de la cuenta.
+- Los cambios sensibles piden la contraseña actual y, si la cuenta tiene 2FA, el código de la app (step-up).
+- Eliminar exige escribir `ELIMINAR`. Con reservas pendientes, la API responde 409 y la pantalla dice cuántas son. Tras eliminar, la API cierra todas las sesiones y la web vuelve a `/login`.
+
 ## Onboarding
 
 El wizard se arma con la configuración que devuelve `GET /v1/me/onboarding`: pasos, preguntas, opciones, áreas e idiomas. El frontend no hardcodea preguntas ni opciones.
@@ -129,7 +136,13 @@ La organización sigue atomic design de forma pragmática: `ui` son átomos, `fo
 - `POST /auth/logout`
 - `POST /auth/password/forgot`
 - `POST /auth/password/reset`
+- `POST /auth/login/mfa` (segundo paso con código o código de recuperación)
+- `POST /auth/email/verify`, `POST /auth/email/resend`
 - `GET /me`
+- `GET /me/mfa`, `POST /me/mfa/totp/setup|totp/confirm|recovery-codes|disable`
+- `GET /me/sessions`, `DELETE /me/sessions/:id`, `POST /me/sessions/revoke-others`
+- `POST /me/password`, `POST /me/email`
+- `GET /me/export`, `POST /me/delete`
 - `GET /me/onboarding`
 - `PUT /me/onboarding`
 - `GET|PUT /me/profile`
