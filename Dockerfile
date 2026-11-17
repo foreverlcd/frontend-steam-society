@@ -4,7 +4,8 @@
 
 FROM node:24.22.1-alpine AS build
 WORKDIR /app
-RUN corepack enable
+# pnpm pinned to the version that produced pnpm-lock.yaml.
+RUN npm install -g pnpm@12.15.0
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY . .
