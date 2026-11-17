@@ -25,7 +25,7 @@ function OnboardingLoading() {
       <div className="border-line rounded-3xl border bg-white p-6 shadow-sm">
         <div className="text-muted flex items-center gap-3 text-sm">
           <Spinner className="size-4" />
-          <span>Cargando tu onboarding...</span>
+          <span>Cargando tus intereses...</span>
         </div>
       </div>
     </div>
@@ -42,7 +42,7 @@ function OnboardingError({
   return (
     <div className="mx-auto w-full max-w-3xl px-5 py-10 sm:px-8">
       <Alert tone="error">
-        {message ?? "No pudimos cargar tu onboarding."}
+        {message ?? "No pudimos cargar tus intereses."}
       </Alert>
       <Button type="button" className="mt-4" onClick={onRetry}>
         Reintentar
@@ -232,14 +232,14 @@ function OnboardingWizard({
   const submitLabel = isLastStep
     ? reviewing
       ? "Guardar cambios"
-      : "Finalizar onboarding"
+      : "Finalizar cuestionario"
     : "Guardar y continuar";
 
   return (
     <div className="mx-auto w-full max-w-4xl px-5 py-8 sm:px-8 sm:py-10">
       <header className="max-w-2xl">
         <p className="text-brand-700 text-xs font-semibold tracking-[0.18em] uppercase">
-          Onboarding
+          Tus intereses
         </p>
         <h1 className="text-ink mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
           Completa tu perfil
@@ -347,7 +347,7 @@ export function OnboardingView() {
   if (data.steps.length === 0) {
     return (
       <OnboardingError
-        message="No hay pasos de onboarding disponibles."
+        message="No hay pasos del cuestionario disponibles."
         onRetry={reload}
       />
     );

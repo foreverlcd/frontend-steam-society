@@ -265,7 +265,7 @@ export function ProfileView() {
                 href="/onboarding"
                 className="text-muted hover:text-ink self-center px-3 py-2 text-sm font-medium"
               >
-                Editar respuestas del onboarding
+                Editar mis intereses
               </Link>
             </div>
           </form>

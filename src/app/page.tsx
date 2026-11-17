@@ -62,12 +62,12 @@ export default function HomePage() {
               Mentorías STEAM · Perú y LatAm
             </p>
             <h1 className="text-ink mt-6 max-w-2xl text-4xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl">
-              Más mujeres en STEAM, con acompañamiento que abre puertas.
+              Conversa 1 a 1 con una profesional STEAM.
             </h1>
             <p className="text-muted mt-6 max-w-xl text-base leading-7 sm:text-lg">
-              Steam Society conecta a mentoradas con mentoras que comparten su
-              experiencia, su red y una forma más cercana de crecer en ciencia y
-              tecnología.
+              Elige una mentora de ciencia, tecnología, ingeniería, arte o
+              matemáticas, reserva un horario y recibe el enlace de la
+              videollamada. Así de simple.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
