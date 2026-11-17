@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   formatAreas,
+  formatDayHeading,
   formatLanguages,
   formatPrice,
   matchLabel,
@@ -25,6 +26,14 @@ describe("catalog formatting", () => {
     expect(
       formatPrice({ isFree: false, priceMinor: 5000, currency: "PEN" }),
     ).toMatch(/50/);
+  });
+
+  it("formats day headings with only the first letter capitalized", () => {
+    expect(formatDayHeading("2026-11-18")).toBe("Miércoles 18 de noviembre");
+  });
+
+  it("returns the input when the day is invalid", () => {
+    expect(formatDayHeading("no-es-fecha")).toBe("no-es-fecha");
   });
 
   it("joins areas and languages with a middle dot", () => {

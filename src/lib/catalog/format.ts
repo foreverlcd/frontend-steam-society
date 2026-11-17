@@ -41,6 +41,25 @@ export function formatDateTime(value: string, timezone?: string): string {
   }).format(date);
 }
 
+export function formatDayHeading(day: string): string {
+  const date = new Date(`${day}T12:00:00Z`);
+
+  if (Number.isNaN(date.getTime())) {
+    return day;
+  }
+
+  const text = new Intl.DateTimeFormat("es-PE", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    timeZone: "UTC",
+  })
+    .format(date)
+    .replace(",", "");
+
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 export function formatAreas(mentor: Pick<CatalogMentor, "areas">): string {
   return mentor.areas.map((area) => area.name).join(" · ") || "Sin áreas";
 }
