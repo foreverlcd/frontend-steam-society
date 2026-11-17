@@ -1,0 +1,37 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The gate's secret scan diffs against origin/main; a shallow
+          # clone has no history and would scan nothing.
+          fetch-depth: 0
+      # Version comes from "packageManager" in package.json.
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/gate.sh
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --build-arg NEXT_PUBLIC_API_URL=http://localhost:3000/v1 -t steam-society-web .
+      - name: Smoke test the image
+        run: |
+          docker run -d --name web -p 3001:3001 steam-society-web
+          for i in $(seq 1 30); do curl -fs -o /dev/null http://127.0.0.1:3001/login && exit 0; sleep 1; done
+          docker logs web; exit 1
