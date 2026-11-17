@@ -19,7 +19,8 @@
 //   { "login": "camila.huaman@demo.steamsociety.local" }
 //   { "logout": true }
 //   { "name": "01-home", "path": "/", "wait": 3000, "after": "<js>" }
-//       navigate, optional JS to run after load, then screenshot + text dump.
+//       navigate, optional JS to run after load (inside an async function, so
+//       `await` works; errors are printed), then screenshot + text dump.
 //       In "after", {{DEMO_PASSWORD}} becomes a JS string literal with the
 //       password from the env, so plans can fill login forms without it.
 import { spawn, execFileSync } from "node:child_process";
@@ -166,12 +167,24 @@ try {
     await send("Page.navigate", { url: `${WEB}${s.path}` });
     await sleep(s.wait ?? 3000);
     if (s.after) {
-      await evalJs(
-        s.after.replaceAll(
-          "{{DEMO_PASSWORD}}",
-          JSON.stringify(process.env.DEMO_PASSWORD ?? ""),
-        ),
+      // Wrapped in an async function so plans can use `await`; a failing
+      // script is reported instead of silently producing a misleading shot.
+      const script = s.after.replaceAll(
+        "{{DEMO_PASSWORD}}",
+        JSON.stringify(process.env.DEMO_PASSWORD ?? ""),
       );
+      const outcome = await send("Runtime.evaluate", {
+        expression: `(async () => {\n${script}\n})()`,
+        awaitPromise: true,
+        returnByValue: true,
+      });
+      const failure = outcome.result?.exceptionDetails;
+      if (failure) {
+        const reason =
+          failure.exception?.description?.split("\n")[0] ?? failure.text;
+        console.error(`  after-script failed in ${s.name}: ${reason}`);
+        consoleErrors.push(`${s.name}: after-script: ${reason}`);
+      }
       await sleep(2000);
     }
     const shot = await send("Page.captureScreenshot", {

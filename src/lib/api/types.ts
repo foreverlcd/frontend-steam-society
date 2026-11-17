@@ -69,3 +69,21 @@ export interface ResetPasswordInput {
 export interface ForgotPasswordResponse {
   status: string;
 }
+
+/** One signed-in browser or device (GET /me/sessions). */
+export interface ActiveSession {
+  /** Public id: a hash, never the session cookie. */
+  id: string;
+  /** The browser making this request. */
+  current: boolean;
+  signedInAt: string | null;
+  lastActiveAt: string;
+  userAgent: string | null;
+}
+
+/** Proof that the person at the keyboard owns the account. */
+export interface StepUpProof {
+  password: string;
+  /** 6-digit authenticator code; only when the account has 2FA. */
+  code?: string;
+}

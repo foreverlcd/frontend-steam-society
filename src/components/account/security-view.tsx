@@ -1,13 +1,8 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useState,
-  type FormEvent,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Card } from "@/components/account/card";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -150,14 +145,6 @@ export function SecurityView() {
         )
       ) : null}
     </div>
-  );
-}
-
-function Card({ children }: { children: ReactNode }) {
-  return (
-    <section className="border-line space-y-4 rounded-2xl border bg-white p-5 sm:p-6">
-      {children}
-    </section>
   );
 }
 
