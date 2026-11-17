@@ -331,8 +331,8 @@ export function AdminView() {
           Panel de mentoras
         </h1>
         <p className="text-muted mt-3 text-sm leading-6">
-          Revisa el onboarding completo antes de aprobar, rechazar o suspender
-          un perfil.
+          Revisa el cuestionario de intereses completo antes de aprobar,
+          rechazar o suspender un perfil.
         </p>
         <p className="text-muted mt-2 text-xs">
           Sesión iniciada como {user.email}.
@@ -720,7 +720,9 @@ export function AdminView() {
 
               <div className="border-line border-t pt-5">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <h3 className="text-ink text-sm font-semibold">Onboarding</h3>
+                  <h3 className="text-ink text-sm font-semibold">
+                    Cuestionario de intereses
+                  </h3>
                   <Badge
                     tone={
                       selectedDetail.onboarding.completion.complete
