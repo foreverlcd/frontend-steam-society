@@ -19,7 +19,9 @@
 //   { "login": "camila.huaman@demo.steamsociety.local" }
 //   { "logout": true }
 //   { "name": "01-home", "path": "/", "wait": 3000, "after": "<js>" }
-//       navigate, optional JS to run after load, then screenshot + text dump
+//       navigate, optional JS to run after load, then screenshot + text dump.
+//       In "after", {{DEMO_PASSWORD}} becomes a JS string literal with the
+//       password from the env, so plans can fill login forms without it.
 import { spawn, execFileSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
@@ -164,7 +166,12 @@ try {
     await send("Page.navigate", { url: `${WEB}${s.path}` });
     await sleep(s.wait ?? 3000);
     if (s.after) {
-      await evalJs(s.after);
+      await evalJs(
+        s.after.replaceAll(
+          "{{DEMO_PASSWORD}}",
+          JSON.stringify(process.env.DEMO_PASSWORD ?? ""),
+        ),
+      );
       await sleep(2000);
     }
     const shot = await send("Page.captureScreenshot", {

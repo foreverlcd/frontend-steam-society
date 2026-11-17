@@ -99,6 +99,7 @@ interface NavItem {
 
 function navItemsForRole(role: string, homePath: string): NavItem[] {
   const home = { href: homePath, label: role === "admin" ? "Panel" : "Inicio" };
+  const security = { href: "/account/security", label: "Seguridad" };
 
   if (role === "mentee") {
     return [
@@ -106,6 +107,7 @@ function navItemsForRole(role: string, homePath: string): NavItem[] {
       { href: "/mentors", label: "Mentoras" },
       { href: "/dashboard/bookings", label: "Reservas" },
       { href: "/dashboard/profile", label: "Perfil" },
+      security,
     ];
   }
 
@@ -116,10 +118,11 @@ function navItemsForRole(role: string, homePath: string): NavItem[] {
       { href: "/dashboard/availability", label: "Disponibilidad" },
       { href: "/dashboard/bookings", label: "Reservas" },
       { href: "/dashboard/profile", label: "Perfil" },
+      security,
     ];
   }
 
-  return [home];
+  return [home, security];
 }
 
 function NavLink({

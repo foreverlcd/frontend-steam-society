@@ -64,6 +64,22 @@ const CODE_MESSAGES: Record<string, string> = {
     "El pago cambió de estado. Recarga y vuelve a intentarlo.",
   PAYMENT_PROVIDER_NOT_FOUND: "El medio de pago no está disponible.",
   INVALID_WEBHOOK: "No pudimos registrar el resultado del pago.",
+  EMAIL_NOT_VERIFIED:
+    "Confirma tu correo para continuar. Revisa tu bandeja o pide un enlace nuevo.",
+  EMAIL_ALREADY_VERIFIED: "Tu correo ya está confirmado.",
+  INVALID_VERIFICATION_TOKEN:
+    "El enlace de confirmación no es válido o ya expiró. Pide uno nuevo desde tu cuenta.",
+  INVALID_MFA_CODE:
+    "El código no es correcto o ya se usó. Prueba con el siguiente.",
+  MFA_CHALLENGE_EXPIRED:
+    "Pasaron más de 5 minutos. Vuelve a ingresar tu correo y contraseña.",
+  MFA_SETUP_REQUIRED: "Primero genera la clave para tu app de autenticación.",
+  MFA_ALREADY_ENABLED: "La verificación en dos pasos ya está activa.",
+  MFA_NOT_ENABLED: "La verificación en dos pasos no está activa.",
+  MFA_REQUIRED_FOR_ROLE:
+    "Tu rol debe mantener la verificación en dos pasos activa.",
+  MFA_ENROLLMENT_REQUIRED:
+    "Activa la verificación en dos pasos para usar el panel de administración.",
   NETWORK_ERROR:
     "No pudimos conectar con el servidor. Revisa que la API esté disponible.",
   HTTP_429: "Demasiados intentos. Espera un minuto y vuelve a intentarlo.",

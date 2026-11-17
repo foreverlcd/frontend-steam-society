@@ -11,6 +11,34 @@ export interface AuthUser {
   firstName: string | null;
   lastName: string | null;
   birthDate: string | null;
+  /** True once the user opened the link we emailed (ADR-024). */
+  emailVerified: boolean;
+  /** True when an authenticator app is enrolled and confirmed. */
+  mfaEnabled: boolean;
+}
+
+/** POST /auth/login answers with the user, or asks for the second factor. */
+export type LoginResponse = AuthUser | { mfaRequired: true };
+
+/** A 6-digit authenticator code or a one-time recovery code. */
+export type SecondFactorInput = { code: string } | { recoveryCode: string };
+
+export interface MfaStatus {
+  enabled: boolean;
+  /** The role cannot turn 2FA off (admins). */
+  required: boolean;
+  recoveryCodesRemaining: number;
+}
+
+export interface TotpSetup {
+  /** Base32 key for manual entry in the authenticator app. */
+  secret: string;
+  /** otpauth:// link that opens the authenticator app on the phone. */
+  otpauthUri: string;
+}
+
+export interface RecoveryCodesResponse {
+  recoveryCodes: string[];
 }
 
 export type PublicRole = Exclude<UserRole, "admin">;
