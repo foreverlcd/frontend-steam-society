@@ -20,6 +20,7 @@ import { useAuth } from "@/lib/auth/auth-context";
 import {
   formatAreas,
   formatDateTime,
+  formatDayHeading,
   formatLanguages,
   formatPrice,
   mentorDisplayName,
@@ -27,6 +28,8 @@ import {
 
 type LoadStatus = "loading" | "ready" | "error";
 type SlotsStatus = "idle" | "loading" | "ready" | "error";
+
+const DAYS_PAGE_SIZE = 5;
 
 function toDateInput(date: Date): string {
   const year = date.getFullYear();
@@ -66,20 +69,6 @@ function groupSlotsByDay(slots: Slot[]): Array<[string, Slot[]]> {
   return [...groups.entries()];
 }
 
-function formatLocalDay(day: string): string {
-  const date = new Date(`${day}T12:00:00`);
-
-  if (Number.isNaN(date.getTime())) {
-    return day;
-  }
-
-  return new Intl.DateTimeFormat("es-PE", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  }).format(date);
-}
-
 export function MentorDetailView({ mentorId }: { mentorId: string }) {
   const { user, refresh } = useAuth();
   const today = useMemo(() => new Date(), []);
@@ -94,6 +83,7 @@ export function MentorDetailView({ mentorId }: { mentorId: string }) {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [slotsStatus, setSlotsStatus] = useState<SlotsStatus>("loading");
   const [slotsError, setSlotsError] = useState<string | null>(null);
+  const [visibleDays, setVisibleDays] = useState(DAYS_PAGE_SIZE);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [booking, setBooking] = useState<Booking | null>(null);
@@ -220,6 +210,7 @@ export function MentorDetailView({ mentorId }: { mentorId: string }) {
 
   function selectOffering(id: string) {
     setSelectedOfferingId(id);
+    setVisibleDays(DAYS_PAGE_SIZE);
     setSlotsStatus("loading");
     setSlotsError(null);
     setSelectedSlot(null);
@@ -227,6 +218,7 @@ export function MentorDetailView({ mentorId }: { mentorId: string }) {
 
   function handleFromDateChange(value: string) {
     setFromDate(value);
+    setVisibleDays(DAYS_PAGE_SIZE);
     setSlotsStatus("loading");
     setSlotsError(null);
     setSelectedSlot(null);
@@ -234,6 +226,7 @@ export function MentorDetailView({ mentorId }: { mentorId: string }) {
 
   function handleToDateChange(value: string) {
     setToDate(value);
+    setVisibleDays(DAYS_PAGE_SIZE);
     setSlotsStatus("loading");
     setSlotsError(null);
     setSelectedSlot(null);
@@ -388,17 +381,44 @@ export function MentorDetailView({ mentorId }: { mentorId: string }) {
 
       {selectedOffering ? (
         <section className="border-line mt-8 rounded-3xl border bg-white p-6 shadow-sm">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="text-ink text-xl font-semibold tracking-tight">
-                Elige un horario
-              </h2>
-              <p className="text-muted mt-1 text-sm">
-                {selectedOffering.title} · {selectedOffering.durationMinutes}{" "}
-                min · {formatPrice(selectedOffering)}
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
+          <div>
+            <h2 className="text-ink text-xl font-semibold tracking-tight">
+              Elige un horario
+            </h2>
+            <p className="text-muted mt-1 text-sm">
+              {selectedOffering.title} · {selectedOffering.durationMinutes} min
+              · {formatPrice(selectedOffering)}
+            </p>
+          </div>
+
+          {!user ? (
+            <Alert tone="info" className="mt-4">
+              <p>Para reservar necesitas una cuenta de mentorada. Es gratis.</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Link
+                  href="/register"
+                  className={buttonClassName({ size: "sm" })}
+                >
+                  Crear cuenta
+                </Link>
+                <Link
+                  href="/login"
+                  className={buttonClassName({
+                    size: "sm",
+                    variant: "secondary",
+                  })}
+                >
+                  Iniciar sesión
+                </Link>
+              </div>
+            </Alert>
+          ) : null}
+
+          <details className="mt-4">
+            <summary className="text-brand-700 cursor-pointer text-sm font-medium">
+              Cambiar fechas
+            </summary>
+            <div className="mt-3 grid max-w-md grid-cols-2 gap-3">
               <label className="space-y-1.5">
                 <span className="text-ink text-xs font-medium">Desde</span>
                 <Input
@@ -418,7 +438,7 @@ export function MentorDetailView({ mentorId }: { mentorId: string }) {
                 />
               </label>
             </div>
-          </div>
+          </details>
 
           {slotsStatus === "loading" ? (
             <div className="text-muted mt-6 flex items-center gap-3 text-sm">
@@ -442,10 +462,10 @@ export function MentorDetailView({ mentorId }: { mentorId: string }) {
 
           {slotsStatus === "ready" && groups.length > 0 ? (
             <div className="mt-6 space-y-5">
-              {groups.map(([day, daySlots]) => (
+              {groups.slice(0, visibleDays).map(([day, daySlots]) => (
                 <div key={day}>
-                  <h3 className="text-ink text-sm font-semibold capitalize">
-                    {formatLocalDay(day)}
+                  <h3 className="text-ink text-sm font-semibold">
+                    {formatDayHeading(day)}
                   </h3>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {daySlots.map((slot) => (
@@ -456,8 +476,8 @@ export function MentorDetailView({ mentorId }: { mentorId: string }) {
                         aria-pressed={selectedSlot === slot.startsAt}
                         className={
                           selectedSlot === slot.startsAt
-                            ? "border-brand-600 bg-brand-600 rounded-xl border px-3 py-2 text-xs font-semibold text-white"
-                            : "border-line text-ink hover:border-brand-300 hover:bg-brand-50 rounded-xl border bg-white px-3 py-2 text-xs font-semibold transition"
+                            ? "border-brand-600 bg-brand-600 min-h-11 rounded-xl border px-4 py-2 text-sm font-semibold text-white"
+                            : "border-line text-ink hover:border-brand-300 hover:bg-brand-50 min-h-11 rounded-xl border bg-white px-4 py-2 text-sm font-semibold transition"
                         }
                       >
                         {slot.localStart.slice(11, 16)}
@@ -466,22 +486,19 @@ export function MentorDetailView({ mentorId }: { mentorId: string }) {
                   </div>
                 </div>
               ))}
+              {groups.length > visibleDays ? (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setVisibleDays((n) => n + DAYS_PAGE_SIZE)}
+                >
+                  Ver más días
+                </Button>
+              ) : null}
             </div>
           ) : null}
 
           <div className="border-line mt-8 border-t pt-6">
-            {!user ? (
-              <div className="text-muted text-sm">
-                <p>Inicia sesión como mentorada para reservar una sesión.</p>
-                <Link
-                  href="/login"
-                  className={buttonClassName({ size: "sm", className: "mt-3" })}
-                >
-                  Iniciar sesión
-                </Link>
-              </div>
-            ) : null}
-
             {user && user.role !== "mentee" ? (
               <Alert tone="info">
                 Las reservas se crean desde una cuenta de mentorada. Tu rol

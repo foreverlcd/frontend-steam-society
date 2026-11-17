@@ -278,7 +278,7 @@ export function CatalogView() {
           />
         </label>
 
-        <label className="flex items-center gap-2 pt-6 text-sm">
+        <label className="flex min-h-11 items-center gap-2 pt-6 text-sm">
           <input
             type="checkbox"
             checked={draft.isFree}
@@ -294,8 +294,15 @@ export function CatalogView() {
         </label>
 
         <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-6">
-          <Button type="submit">Aplicar filtros</Button>
-          <Button type="button" variant="secondary" onClick={handleReset}>
+          <Button type="submit" className="min-h-11">
+            Aplicar filtros
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            className="min-h-11"
+            onClick={handleReset}
+          >
             Limpiar
           </Button>
         </div>

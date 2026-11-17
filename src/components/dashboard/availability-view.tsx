@@ -34,6 +34,14 @@ const WEEKDAYS: Array<{ value: Weekday; label: string }> = [
   { value: 7, label: "Domingo" },
 ];
 
+function browserTimezone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Lima";
+  } catch {
+    return "America/Lima";
+  }
+}
+
 function newRule(timezone: string): DraftRule {
   return {
     key: crypto.randomUUID(),
@@ -49,6 +57,7 @@ export function AvailabilityView() {
   const [status, setStatus] = useState<Status>("loading");
   const [error, setError] = useState<string | null>(null);
   const [timezone, setTimezone] = useState("America/Lima");
+  const [editingTimezone, setEditingTimezone] = useState(false);
   const [rules, setRules] = useState<DraftRule[]>([]);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -63,7 +72,7 @@ export function AvailabilityView() {
           return;
         }
 
-        setTimezone(response.timezone);
+        setTimezone(response.timezone?.trim() || browserTimezone());
         setRules(
           response.rules.map((rule) => ({
             key: rule.id,
@@ -121,6 +130,20 @@ export function AvailabilityView() {
     setNotice(null);
   }
 
+  function applySuggestedSchedule() {
+    setRules(
+      ([1, 2, 3, 4, 5] as Weekday[]).map((weekday) => ({
+        key: crypto.randomUUID(),
+        weekday,
+        startTime: "18:00",
+        endTime: "21:00",
+        timezone,
+      })),
+    );
+    setNotice(null);
+    setFormError(null);
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSaving(true);
@@ -139,7 +162,7 @@ export function AvailabilityView() {
         })),
       });
 
-      setTimezone(response.timezone);
+      setTimezone(response.timezone?.trim() || browserTimezone());
       setRules(
         response.rules.map((rule) => ({
           key: rule.id,
@@ -194,24 +217,41 @@ export function AvailabilityView() {
       {status === "ready" ? (
         <form onSubmit={handleSubmit} className="mt-8 space-y-5">
           <div className="border-line rounded-3xl border bg-white p-6 shadow-sm">
-            <div className="max-w-xs space-y-1.5">
-              <label
-                htmlFor="availability-timezone"
-                className="text-ink block text-sm font-medium"
-              >
-                Zona horaria
-              </label>
-              <Input
-                id="availability-timezone"
-                required
-                value={timezone}
-                onChange={(event) => handleTimezoneChange(event.target.value)}
-                placeholder="America/Lima"
-              />
-              <p className="text-muted text-xs">
-                Por ejemplo America/Lima (hora de Perú).
-              </p>
-            </div>
+            {editingTimezone ? (
+              <div className="max-w-xs space-y-1.5">
+                <label
+                  htmlFor="availability-timezone"
+                  className="text-ink block text-sm font-medium"
+                >
+                  Zona horaria
+                </label>
+                <Input
+                  id="availability-timezone"
+                  required
+                  value={timezone}
+                  onChange={(event) => handleTimezoneChange(event.target.value)}
+                  placeholder="America/Lima"
+                />
+                <p className="text-muted text-xs">
+                  Por ejemplo America/Lima (hora de Perú).
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="text-ink text-sm">
+                  Tu zona horaria: <strong>{timezone}</strong>
+                </p>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="min-h-11"
+                  onClick={() => setEditingTimezone(true)}
+                >
+                  Cambiar
+                </Button>
+              </div>
+            )}
           </div>
 
           <div className="space-y-3">
@@ -220,6 +260,17 @@ export function AvailabilityView() {
                 No tienes franjas configuradas. Agrega la primera para que las
                 mentoradas puedan reservar.
               </p>
+            ) : null}
+
+            {rules.length === 0 ? (
+              <Button
+                type="button"
+                variant="secondary"
+                className="min-h-11"
+                onClick={applySuggestedSchedule}
+              >
+                Usar horario sugerido (lun a vie, 18:00 a 21:00)
+              </Button>
             ) : null}
 
             {rules.map((rule, index) => (
@@ -292,6 +343,7 @@ export function AvailabilityView() {
                   type="button"
                   variant="ghost"
                   size="sm"
+                  className="min-h-11"
                   aria-label={`Eliminar franja ${index + 1}`}
                   onClick={() => removeRule(rule.key)}
                 >
@@ -302,7 +354,12 @@ export function AvailabilityView() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="secondary" onClick={addRule}>
+            <Button
+              type="button"
+              variant="secondary"
+              className="min-h-11"
+              onClick={addRule}
+            >
               Agregar franja
             </Button>
             <Button type="submit" loading={saving}>

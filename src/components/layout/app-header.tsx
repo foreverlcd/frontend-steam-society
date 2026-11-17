@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/cn";
 import { useAuth } from "@/lib/auth/auth-context";
 import { homePathForRole, roleLabel } from "@/lib/auth/roles";
 
@@ -20,7 +21,7 @@ export function AppHeader() {
   const displayName =
     [user.firstName, user.lastName].filter(Boolean).join(" ") || user.email;
   const homePath = homePathForRole(user.role);
-  const homeLabel = user.role === "admin" ? "Panel" : "Inicio";
+  const navItems = navItemsForRole(user.role, homePath);
 
   async function handleLogout() {
     setLoggingOut(true);
@@ -43,28 +44,15 @@ export function AppHeader() {
           <Logo />
         </Link>
 
-        <nav className="hidden items-center gap-1 sm:flex">
-          <Link
-            href={homePath}
-            className="text-muted hover:bg-brand-50 hover:text-ink rounded-lg px-3 py-2 text-sm font-medium transition"
-          >
-            {homeLabel}
-          </Link>
-          {user.role === "mentee" ? (
-            <>
-              <NavLink href="/mentors">Mentoras</NavLink>
-              <NavLink href="/dashboard/bookings">Reservas</NavLink>
-              <NavLink href="/dashboard/profile">Perfil</NavLink>
-            </>
-          ) : null}
-          {user.role === "mentor" ? (
-            <>
-              <NavLink href="/dashboard/offerings">Ofertas</NavLink>
-              <NavLink href="/dashboard/availability">Disponibilidad</NavLink>
-              <NavLink href="/dashboard/bookings">Reservas</NavLink>
-              <NavLink href="/dashboard/profile">Perfil</NavLink>
-            </>
-          ) : null}
+        <nav
+          aria-label="Navegación principal"
+          className="hidden items-center gap-1 sm:flex"
+        >
+          {navItems.map((item) => (
+            <NavLink key={item.href} href={item.href}>
+              {item.label}
+            </NavLink>
+          ))}
         </nav>
 
         <div className="flex items-center gap-3">
@@ -89,15 +77,67 @@ export function AppHeader() {
           </Button>
         </div>
       </div>
+
+      <nav
+        aria-label="Navegación principal"
+        className="border-line mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto border-t px-3 sm:hidden"
+      >
+        {navItems.map((item) => (
+          <NavLink key={item.href} href={item.href} className="shrink-0">
+            {item.label}
+          </NavLink>
+        ))}
+      </nav>
     </header>
   );
 }
 
-function NavLink({ href, children }: { href: string; children: string }) {
+interface NavItem {
+  href: string;
+  label: string;
+}
+
+function navItemsForRole(role: string, homePath: string): NavItem[] {
+  const home = { href: homePath, label: role === "admin" ? "Panel" : "Inicio" };
+
+  if (role === "mentee") {
+    return [
+      home,
+      { href: "/mentors", label: "Mentoras" },
+      { href: "/dashboard/bookings", label: "Reservas" },
+      { href: "/dashboard/profile", label: "Perfil" },
+    ];
+  }
+
+  if (role === "mentor") {
+    return [
+      home,
+      { href: "/dashboard/offerings", label: "Ofertas" },
+      { href: "/dashboard/availability", label: "Disponibilidad" },
+      { href: "/dashboard/bookings", label: "Reservas" },
+      { href: "/dashboard/profile", label: "Perfil" },
+    ];
+  }
+
+  return [home];
+}
+
+function NavLink({
+  href,
+  children,
+  className,
+}: {
+  href: string;
+  children: string;
+  className?: string;
+}) {
   return (
     <Link
       href={href}
-      className="text-muted hover:bg-brand-50 hover:text-ink rounded-lg px-3 py-2 text-sm font-medium transition"
+      className={cn(
+        "text-muted hover:bg-brand-50 hover:text-ink inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium whitespace-nowrap transition sm:min-h-0 sm:py-2",
+        className,
+      )}
     >
       {children}
     </Link>
