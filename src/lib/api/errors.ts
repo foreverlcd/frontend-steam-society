@@ -90,6 +90,16 @@ const CODE_MESSAGES: Record<string, string> = {
     "Tienes reservas pendientes. Cancélalas o espera a que terminen antes de eliminar tu cuenta.",
   ADMIN_SELF_DELETE_FORBIDDEN:
     "Las cuentas de administración no se pueden eliminar desde aquí.",
+  USER_NOT_FOUND: "No encontramos esa cuenta.",
+  USER_NOT_ACTIVE:
+    "Solo se pueden suspender cuentas activas. Recarga para ver su estado actual.",
+  USER_NOT_SUSPENDED:
+    "La cuenta ya no está suspendida. Recarga para ver su estado actual.",
+  CANNOT_TARGET_ADMIN:
+    "Las cuentas de administración no se pueden suspender desde aquí.",
+  REPORT_NOT_FOUND: "No encontramos ese reporte.",
+  REPORT_ALREADY_CLOSED:
+    "Otra persona ya cerró este reporte. Recarga la bandeja.",
   NETWORK_ERROR:
     "No pudimos conectar con el servidor. Revisa que la API esté disponible.",
   HTTP_429: "Demasiados intentos. Espera un minuto y vuelve a intentarlo.",
