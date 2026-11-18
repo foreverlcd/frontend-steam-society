@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
-# NEXT_PUBLIC_API_URL es pública: Next la incrusta en el bundle durante el build.
-# Pásala con --build-arg; cambiarla exige reconstruir la imagen.
+# Las variables NEXT_PUBLIC_* son públicas: Next las incrusta en el bundle durante
+# el build. Pásalas con --build-arg; cambiarlas exige reconstruir la imagen.
 
 FROM node:24.22.1-alpine AS build
 WORKDIR /app
@@ -10,7 +10,13 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY . .
 ARG NEXT_PUBLIC_API_URL=http://localhost:3000/v1
-ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_SITE_URL=http://localhost:3001
+ARG NEXT_PUBLIC_SUPPORT_EMAIL=""
+ARG NEXT_PUBLIC_SUPPORT_WHATSAPP=""
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
+    NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
+    NEXT_PUBLIC_SUPPORT_EMAIL=$NEXT_PUBLIC_SUPPORT_EMAIL \
+    NEXT_PUBLIC_SUPPORT_WHATSAPP=$NEXT_PUBLIC_SUPPORT_WHATSAPP
 ENV NEXT_TELEMETRY_DISABLED=1
 # `public` es opcional en el repo; se garantiza para el COPY del runtime.
 RUN mkdir -p public && pnpm build

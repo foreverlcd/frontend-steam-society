@@ -29,9 +29,10 @@ La web queda en [http://localhost:3001](http://localhost:3001). El backend ya pe
 
 ### Variables de entorno
 
-| Variable              | Ejemplo                    | Descripción                                      |
-| --------------------- | -------------------------- | ------------------------------------------------ |
-| `NEXT_PUBLIC_API_URL` | `http://localhost:3000/v1` | URL base de la API, incluyendo el prefijo `/v1`. |
+| Variable               | Ejemplo                    | Descripción                                                                                                 |
+| ---------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_API_URL`  | `http://localhost:3000/v1` | URL base de la API, incluyendo el prefijo `/v1`.                                                            |
+| `NEXT_PUBLIC_SITE_URL` | `http://localhost:3001`    | Origen público de la web (sin `/` final): canonical, sitemap, robots, `llms.txt`, JSON-LD y tarjeta social. |
 
 `NEXT_PUBLIC_*` se incrusta en el bundle del navegador: nunca pongas secretos ahí. En producción, frontend y API deben ser same-site por la cookie `SameSite=Lax`; si no, hace falta `SameSite=None; Secure` o un proxy same-origin.
 
@@ -178,4 +179,4 @@ docker build --build-arg NEXT_PUBLIC_API_URL=https://api.example.com/v1 -t steam
 docker run --rm -p 3001:3001 steam-society-web
 ```
 
-`NEXT_PUBLIC_API_URL` es pública y Next la incrusta en el bundle durante el build: se pasa con `--build-arg` (por defecto `http://localhost:3000/v1`) y cambiarla exige reconstruir la imagen. No metas secretos en ella. La CI (`.github/workflows/ci.yml`) corre `scripts/gate.sh` y un `docker build` sin publicar.
+Las variables `NEXT_PUBLIC_*` (`API_URL`, `SITE_URL`, `SUPPORT_EMAIL`, `SUPPORT_WHATSAPP`) son públicas y Next las incrusta en el bundle durante el build: se pasan con `--build-arg` y cambiarlas exige reconstruir la imagen. No metas secretos en ella. La CI (`.github/workflows/ci.yml`) corre `scripts/gate.sh` y un `docker build` sin publicar.

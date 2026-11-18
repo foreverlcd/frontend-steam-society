@@ -1,7 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Logo } from "@/components/brand/logo";
 import { RequireGuest } from "@/components/auth/require-guest";
+
+// Account screens are not search results; /register opts back in.
+export const metadata: Metadata = { robots: { index: false, follow: true } };
 
 // Auth screens are fully client-side (session lives in an HttpOnly cookie).
 // They are allowed to block while the client resolves the session.

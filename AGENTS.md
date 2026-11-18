@@ -42,6 +42,7 @@ scripts/gate.sh   # límites de arquitectura, lint, format, tests, build y secre
 ## Arnés de agentes
 
 El arnés completo está en `../backend-steam-society/docs/HARNESS.md`: roles, delegación, planes (`docs/exec-plans/`), principios de oro y bitácora. Además:
+
 - `pnpm lint` incluye `scripts/check-boundaries.mjs`: solo `src/lib/api/client.ts` hace `fetch`, `lib/` no importa UI, `components/ui` no conoce la API ni el dominio, y los componentes no importan rutas. El mensaje de error dice cómo corregir.
 - **Ver la app:** con la API y la web levantadas, `DEMO_PASSWORD=... pnpm ui:shots scripts/ui-plans/smoke.json` guarda capturas, texto de cada pantalla y errores de consola en `.shots/<plan>/`. Para un cambio visual, crea un plan con las pantallas afectadas (escritorio 1280×800 y móvil 390×844) y revisa las capturas antes de darlo por terminado.
 - El mapa visual del sistema está en `../backend-steam-society/docs/FLOWS.md`.
@@ -56,7 +57,7 @@ El arnés completo está en `../backend-steam-society/docs/HARNESS.md`: roles, d
 
 ### Endpoints ya usados
 
-- `POST /auth/register`: `{ email, password, role, birthDate, firstName?, lastName? }`. No inicia sesión; el frontend hace login después.
+- `POST /auth/register`: `{ email, password, role, birthDate, firstName?, lastName?, acceptTerms: true, guardianConsent? }`. No inicia sesión; el frontend hace login después. Menores de 14 sin `guardianConsent: true` → `400 GUARDIAN_CONSENT_REQUIRED`.
 - `POST /auth/login`: inicia sesión y devuelve el usuario.
 - `POST /auth/logout`: cierra la sesión.
 - `POST /auth/password/forgot`: responde `202` siempre, exista o no el correo.
@@ -84,6 +85,15 @@ El arnés completo está en `../backend-steam-society/docs/HARNESS.md`: roles, d
 - `GET /payments/config`: `{ enabled, provider }`; si `enabled` es `false` no se muestra el botón Pagar.
 - `POST /payments/checkout`: `{ bookingId }` → `{ checkoutUrl, … }`; el navegador redirige a `checkoutUrl`.
 - `POST /payments/webhooks/fake`: solo desarrollo (`PAYMENTS_PROVIDER=fake`); lo usa `/payments/fake-checkout`.
+
+### Sitio público, legal y SEO/GEO
+
+- Páginas públicas (Server Components, sin sesión): `/`, `/para-mentees`, `/para-mentoras`, `/help`, `/privacidad`, `/terminos` y `/cookies`. Los textos legales son borradores pendientes de revisión legal (DA-01/DA-04); su versión vive en `src/lib/site.ts` (`LEGAL_VERSION`) y debe coincidir con `LEGAL_TERMS_VERSION` de la API.
+- `NEXT_PUBLIC_SITE_URL` (origen público, sin `/` final) alimenta canonical, `sitemap.xml`, `robots.txt`, `llms.txt`, JSON-LD y la tarjeta social `/og`. Las páginas a indexar se listan en `PUBLIC_ROUTES` (`src/lib/site.ts`).
+- `robots.ts` permite los crawlers de IA en lo público y bloquea la zona privada; `(app)` y `(auth)` declaran `noindex` (salvo `/register`).
+- La FAQ visible y su `FAQPage` salen de los mismos datos (`src/lib/marketing/faq.ts`). No escribas en ellas nada que la plataforma no haga hoy.
+- La tarjeta social es la ruta `/og`, no `opengraph-image`: la convención se aplicaría también a rutas dinámicas privadas y rompe su prerender. Tampoco pongas `openGraph.url` relativo en el layout raíz por la misma razón.
+- Solo existe la cookie de sesión de la API; el aviso de cookies es informativo y guarda su cierre en `localStorage`.
 
 ### Pantallas que consumen el contrato
 

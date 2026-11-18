@@ -4,6 +4,10 @@ import { RegisterForm } from "@/components/auth/register-form";
 
 export const metadata: Metadata = {
   title: "Crear cuenta",
+  description:
+    "Crea tu cuenta gratis en Steam Society como mentee o como mentora STEAM.",
+  alternates: { canonical: "/register" },
+  robots: { index: true, follow: true },
 };
 
 // The session is resolved client-side from an HttpOnly cookie.

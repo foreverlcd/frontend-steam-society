@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PublicFooter } from "@/components/layout/public-footer";
 import { PublicHeader } from "@/components/layout/public-header";
 import { SUPPORT_EMAIL, whatsappLink } from "@/lib/support";
 
 export const metadata: Metadata = {
   title: "Ayuda y seguridad",
+  description:
+    "Cómo reportar o bloquear a alguien en Steam Society, reglas de la comunidad y contactos de emergencia en Perú (105 y Línea 100).",
+  alternates: { canonical: "/help" },
 };
 
 export default function HelpPage() {
@@ -37,7 +41,7 @@ export default function HelpPage() {
           </ul>
         </section>
 
-        <section className="space-y-2">
+        <section id="reportar" className="scroll-mt-20 space-y-2">
           <h2 className="text-ink text-lg font-semibold">
             Reportar o bloquear a alguien
           </h2>
@@ -49,10 +53,11 @@ export default function HelpPage() {
             >
               tus reservas
             </Link>
-            , usa “Reportar o bloquear” junto a la sesión. El reporte lo lee
-            solo el equipo y la otra persona no sabe quién lo hizo. Si bloqueas
-            a alguien, se cancelan sus reservas abiertas contigo y no podrán
-            volver a reservar entre ustedes. Puedes desbloquear desde{" "}
+            , usa “Reportar o bloquear” junto a la sesión; también está en el
+            perfil de cada mentora. El reporte lo lee solo el equipo y la otra
+            persona no sabe quién lo hizo. Si bloqueas a alguien, se cancelan
+            sus reservas abiertas contigo y no podrán volver a reservar entre
+            ustedes. Puedes desbloquear desde{" "}
             <Link href="/account/security" className="text-brand-700 underline">
               tu cuenta
             </Link>
@@ -115,6 +120,7 @@ export default function HelpPage() {
           )}
         </section>
       </main>
+      <PublicFooter />
     </div>
   );
 }
