@@ -28,6 +28,16 @@ export type CallPhase =
   /** The server refused the stream (call over, booking cancelled...). */
   | "closed";
 
+export interface ChatMessage {
+  id: string;
+  from: "me" | "peer";
+  text: string;
+  sentAt: number;
+}
+
+/** Longest chat message accepted, in characters. */
+export const CHAT_MAX_LENGTH = 1000;
+
 /**
  * 1:1 WebRTC call with "perfect negotiation": both sides may offer at any
  * time and the polite one (the mentee) yields on collisions. Signals go
@@ -37,11 +47,14 @@ export function useCall(info: CallInfo, localStream: MediaStream | null) {
   const [phase, setPhase] = useState<CallPhase>("idle");
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [sharingScreen, setSharingScreen] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [chatReady, setChatReady] = useState(false);
 
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const sourceRef = useRef<EventSource | null>(null);
   const localRef = useRef<MediaStream | null>(localStream);
   const screenRef = useRef<MediaStreamTrack | null>(null);
+  const chatRef = useRef<RTCDataChannel | null>(null);
   const makingOffer = useRef(false);
   const ignoreOffer = useRef(false);
   const outbox = useRef<Promise<unknown>>(Promise.resolve());
@@ -65,6 +78,15 @@ export function useCall(info: CallInfo, localStream: MediaStream | null) {
   );
 
   const closePeer = useCallback(() => {
+    const chat = chatRef.current;
+    chatRef.current = null;
+    if (chat) {
+      chat.onopen = null;
+      chat.onclose = null;
+      chat.onmessage = null;
+      chat.close();
+    }
+    setChatReady(false);
     const pc = pcRef.current;
     pcRef.current = null;
     if (pc) {
@@ -92,6 +114,18 @@ export function useCall(info: CallInfo, localStream: MediaStream | null) {
     else pc.addTransceiver("audio", { direction: "recvonly" });
     if (local && video) pc.addTrack(video, local);
     else pc.addTransceiver("video", { direction: "recvonly" });
+
+    // Text chat goes peer to peer, like the media: the server never sees it
+    // and nothing is stored. Negotiated with a fixed id, so both sides open
+    // the same channel without an extra offer.
+    const chat = pc.createDataChannel("chat", { negotiated: true, id: 0 });
+    chatRef.current = chat;
+    chat.onopen = () => setChatReady(true);
+    chat.onclose = () => setChatReady(false);
+    chat.onmessage = ({ data }) => {
+      const message = parseChat(data);
+      if (message) setMessages((current) => [...current, message]);
+    };
 
     pc.ontrack = ({ track, streams }) => {
       setRemoteStream(streams[0] ?? new MediaStream([track]));
@@ -295,6 +329,19 @@ export function useCall(info: CallInfo, localStream: MediaStream | null) {
     }
   }, [stopScreenShare]);
 
+  const sendChat = useCallback((input: string): boolean => {
+    const text = input.trim().slice(0, CHAT_MAX_LENGTH);
+    const chat = chatRef.current;
+    if (!text || !chat || chat.readyState !== "open") return false;
+    const sentAt = Date.now();
+    chat.send(JSON.stringify({ text, sentAt }));
+    setMessages((current) => [
+      ...current,
+      { id: crypto.randomUUID(), from: "me", text, sentAt },
+    ]);
+    return true;
+  }, []);
+
   const leave = useCallback(() => {
     sourceRef.current?.close();
     sourceRef.current = null;
@@ -309,6 +356,8 @@ export function useCall(info: CallInfo, localStream: MediaStream | null) {
       sourceRef.current?.close();
       sourceRef.current = null;
       screenRef.current?.stop();
+      chatRef.current?.close();
+      chatRef.current = null;
       pcRef.current?.close();
       pcRef.current = null;
     },
@@ -319,6 +368,9 @@ export function useCall(info: CallInfo, localStream: MediaStream | null) {
     phase,
     remoteStream,
     sharingScreen,
+    messages,
+    chatReady,
+    sendChat,
     join,
     leave,
     startScreenShare,
@@ -333,4 +385,21 @@ function toDescription(
     type: description.type as "offer" | "answer" | "rollback",
     sdp: description.sdp,
   };
+}
+
+/** Only plain text of a sane size gets in; anything else is dropped. */
+export function parseChat(data: unknown): ChatMessage | null {
+  if (typeof data !== "string" || data.length > CHAT_MAX_LENGTH * 4) {
+    return null;
+  }
+  try {
+    const value = JSON.parse(data) as { text?: unknown };
+    if (typeof value.text !== "string") return null;
+    const text = value.text.trim().slice(0, CHAT_MAX_LENGTH);
+    if (!text) return null;
+    // The receiver's clock decides the time shown; the peer's may be off.
+    return { id: crypto.randomUUID(), from: "peer", text, sentAt: Date.now() };
+  } catch {
+    return null;
+  }
 }

@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { CallChat } from "@/components/call/call-chat";
 import { Alert } from "@/components/ui/alert";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -162,6 +163,15 @@ function OpenCall({
   const media = useLocalMedia();
   const call = useCall(info, media.stream);
   const slow = useSlowConnect(call.phase);
+  const [chatOpen, setChatOpen] = useState(false);
+  // Peer messages already seen; the rest count as unread while closed.
+  const [seenCount, setSeenCount] = useState(0);
+  const peerCount = call.messages.filter((m) => m.from === "peer").length;
+  const unread = chatOpen ? 0 : peerCount - seenCount;
+  const toggleChat = () => {
+    setSeenCount(peerCount);
+    setChatOpen((open) => !open);
+  };
 
   useEffect(() => {
     if (
@@ -249,8 +259,8 @@ function OpenCall({
         ) : null}
       </div>
 
-      <div className="relative min-h-0 flex-1 px-4">
-        <div className="relative h-full overflow-hidden rounded-2xl bg-black">
+      <div className="relative flex min-h-0 flex-1 gap-3 px-4">
+        <div className="relative h-full min-w-0 flex-1 overflow-hidden rounded-2xl bg-black">
           <VideoTile stream={call.remoteStream} fit="contain" />
           {status ? (
             <div className="absolute inset-0 grid place-items-center p-6 text-center">
@@ -286,6 +296,16 @@ function OpenCall({
             ) : null}
           </div>
         </div>
+        {chatOpen ? (
+          <CallChat
+            messages={call.messages}
+            ready={call.chatReady}
+            peerName={info.peerName}
+            onSend={call.sendChat}
+            onClose={toggleChat}
+            className="absolute inset-x-4 top-1/4 bottom-0 z-10 md:static md:w-80 md:shrink-0"
+          />
+        ) : null}
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-2 px-4 py-4">
@@ -305,6 +325,26 @@ function OpenCall({
             <ScreenIcon />
           </ControlButton>
         ) : null}
+        <button
+          type="button"
+          onClick={toggleChat}
+          aria-pressed={chatOpen}
+          aria-label={unread > 0 ? `Chat, ${unread} mensajes sin leer` : "Chat"}
+          title="Chat"
+          className={cn(
+            "relative grid size-12 place-items-center rounded-full transition focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none",
+            chatOpen
+              ? "bg-brand-600 hover:bg-brand-700"
+              : "bg-white/15 hover:bg-white/25",
+          )}
+        >
+          <ChatIcon />
+          {unread > 0 ? (
+            <span className="bg-danger-600 absolute -top-1 -right-1 grid min-w-5 place-items-center rounded-full px-1 text-[11px] font-bold">
+              {unread > 9 ? "9+" : unread}
+            </span>
+          ) : null}
+        </button>
         <button
           type="button"
           onClick={call.leave}
@@ -678,6 +718,23 @@ function ScreenIcon() {
     >
       <rect x="3" y="4" width="18" height="12" rx="2" />
       <path d="M8 20h8M12 16v4M9 10l3-3 3 3M12 7v6" />
+    </svg>
+  );
+}
+
+function ChatIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="size-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" />
     </svg>
   );
 }
