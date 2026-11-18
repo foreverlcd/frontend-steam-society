@@ -98,13 +98,80 @@ export function CallView({ bookingId }: { bookingId: string }) {
     );
   }
 
-  return <OpenCall info={call} onRetry={reload} />;
+  return <CallSession info={call} onRetry={reload} />;
 }
 
-function OpenCall({ info, onRetry }: { info: CallInfo; onRetry: () => void }) {
+type Finish = "ended" | "replaced" | "closed";
+
+/**
+ * Leaving unmounts the call, which turns the camera and microphone off;
+ * entering again starts from the lobby with fresh devices.
+ */
+function CallSession({
+  info,
+  onRetry,
+}: {
+  info: CallInfo;
+  onRetry: () => void;
+}) {
+  const [finished, setFinished] = useState<Finish | null>(null);
+  const [round, setRound] = useState(0);
+
+  if (!finished) {
+    return <OpenCall key={round} info={info} onFinished={setFinished} />;
+  }
+
+  const message =
+    finished === "ended"
+      ? "Saliste de la llamada."
+      : finished === "replaced"
+        ? "Abriste esta llamada en otra pestaña o dispositivo."
+        : "La llamada se cerró: terminó el horario o la reserva cambió.";
+  return (
+    <Shell title={info.offeringTitle} subtitle={`Con ${info.peerName}`}>
+      <Alert tone="info">{message}</Alert>
+      <div className="flex flex-wrap gap-2">
+        {finished === "closed" ? (
+          <Button type="button" onClick={onRetry}>
+            Volver a comprobar
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            onClick={() => {
+              setRound((n) => n + 1);
+              setFinished(null);
+            }}
+          >
+            Volver a entrar
+          </Button>
+        )}
+        <BackLink inline />
+      </div>
+    </Shell>
+  );
+}
+
+function OpenCall({
+  info,
+  onFinished,
+}: {
+  info: CallInfo;
+  onFinished: (reason: Finish) => void;
+}) {
   const media = useLocalMedia();
   const call = useCall(info, media.stream);
   const slow = useSlowConnect(call.phase);
+
+  useEffect(() => {
+    if (
+      call.phase === "ended" ||
+      call.phase === "replaced" ||
+      call.phase === "closed"
+    ) {
+      onFinished(call.phase);
+    }
+  }, [call.phase, onFinished]);
 
   if (call.phase === "idle") {
     return (
@@ -157,29 +224,7 @@ function OpenCall({ info, onRetry }: { info: CallInfo; onRetry: () => void }) {
     call.phase === "replaced" ||
     call.phase === "closed"
   ) {
-    const message =
-      call.phase === "ended"
-        ? "Saliste de la llamada."
-        : call.phase === "replaced"
-          ? "Abriste esta llamada en otra pestaña o dispositivo."
-          : "La llamada se cerró: terminó el horario o la reserva cambió.";
-    return (
-      <Shell title={info.offeringTitle} subtitle={`Con ${info.peerName}`}>
-        <Alert tone="info">{message}</Alert>
-        <div className="flex flex-wrap gap-2">
-          {call.phase === "closed" ? (
-            <Button type="button" onClick={onRetry}>
-              Volver a comprobar
-            </Button>
-          ) : (
-            <Button type="button" onClick={call.join}>
-              Volver a entrar
-            </Button>
-          )}
-          <BackLink inline />
-        </div>
-      </Shell>
-    );
+    return null;
   }
 
   const status = statusText(call.phase, info.peerName);

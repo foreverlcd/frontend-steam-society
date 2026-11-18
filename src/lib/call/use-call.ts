@@ -265,7 +265,10 @@ export function useCall(info: CallInfo, localStream: MediaStream | null) {
       audio: false,
     });
     const track = display.getVideoTracks()[0];
-    if (!track) return;
+    if (!track) {
+      display.getTracks().forEach((t) => t.stop());
+      return;
+    }
     screenRef.current = track;
     setSharingScreen(true);
     track.onended = () => stopScreenShare();
