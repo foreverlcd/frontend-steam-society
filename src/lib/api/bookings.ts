@@ -52,7 +52,7 @@ export interface Booking {
   expiresAt: string;
   confirmedAt: string | null;
   cancelledAt: string | null;
-  cancelledBy: "mentee" | "mentor" | null;
+  cancelledBy: "mentee" | "mentor" | "admin" | "system" | null;
   cancelReason: string | null;
   completedAt: string | null;
   noShowParty: "mentee" | "mentor" | null;
