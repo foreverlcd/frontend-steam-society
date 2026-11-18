@@ -478,15 +478,25 @@ export function BookingsView() {
                 </p>
               </div>
 
-              {booking.session.meetingUrl && booking.status === "confirmed" ? (
-                <a
-                  href={booking.session.meetingUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-brand-700 text-sm font-semibold underline"
-                >
-                  Abrir enlace de sesión
-                </a>
+              {booking.status === "confirmed" ? (
+                <div className="flex flex-col items-end gap-1.5">
+                  <Link
+                    href={`/call/${booking.id}`}
+                    className={buttonClassName({ size: "sm" })}
+                  >
+                    Entrar a la videollamada
+                  </Link>
+                  {booking.session.meetingUrl ? (
+                    <a
+                      href={booking.session.meetingUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-brand-700 text-xs font-semibold underline"
+                    >
+                      Enlace alternativo
+                    </a>
+                  ) : null}
+                </div>
               ) : null}
             </div>
 
@@ -509,8 +519,7 @@ export function BookingsView() {
                     htmlFor={`meeting-${booking.id}`}
                     className="text-ink block text-xs font-medium"
                   >
-                    Enlace de la sesión
-                    {booking.offering.isFree ? "" : " (opcional)"}
+                    Enlace alternativo (opcional)
                   </label>
                   <Input
                     id={`meeting-${booking.id}`}
@@ -524,6 +533,10 @@ export function BookingsView() {
                     }
                     placeholder="https://meet.example.com/sesion"
                   />
+                  <p className="text-muted text-xs">
+                    La sesión se hace en la videollamada de Steam Society. Si
+                    quieres, deja un enlace de otra plataforma por si falla.
+                  </p>
                   {booking.offering.isFree ? null : (
                     <p className="text-muted text-xs">
                       Al aceptar, la reserva queda pendiente del pago de la

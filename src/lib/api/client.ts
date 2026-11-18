@@ -4,6 +4,11 @@ const API_BASE_URL = (
   process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL
 ).replace(/\/+$/, "");
 
+/** Absolute URL of an API path (for EventSource, which cannot use apiFetch). */
+export function apiUrl(path: string): string {
+  return `${API_BASE_URL}${path}`;
+}
+
 export interface ApiRequestOptions extends Omit<
   RequestInit,
   "body" | "credentials" | "headers"
