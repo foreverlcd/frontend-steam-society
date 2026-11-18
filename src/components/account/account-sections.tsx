@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { BlockedCard } from "@/components/safety/blocked-card";
 import { Card } from "@/components/account/card";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -86,6 +87,7 @@ export function AccountSections() {
       <SessionsCard />
       <PasswordCard mfaEnabled={user.mfaEnabled} />
       <EmailCard currentEmail={user.email} mfaEnabled={user.mfaEnabled} />
+      {user.role !== "admin" ? <BlockedCard /> : null}
       <DataCard
         mfaEnabled={user.mfaEnabled}
         canDelete={user.role !== "admin"}

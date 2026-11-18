@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { ReportDialog } from "@/components/safety/report-dialog";
 import { createBooking, type Booking } from "@/lib/api/bookings";
 import {
   getMentor,
@@ -89,6 +90,7 @@ export function MentorDetailView({ mentorId }: { mentorId: string }) {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [reporting, setReporting] = useState(false);
   const [menteeProfile, setMenteeProfile] = useState<MenteeProfile | null>(
     null,
   );
@@ -350,7 +352,22 @@ export function MentorDetailView({ mentorId }: { mentorId: string }) {
               </dd>
             </div>
           </dl>
+          {user && user.role !== "admin" && user.id !== mentor.userId ? (
+            <button
+              type="button"
+              onClick={() => setReporting(true)}
+              className="text-muted hover:text-danger-700 mt-4 text-xs font-medium underline"
+            >
+              Reportar o bloquear
+            </button>
+          ) : null}
         </aside>
+        {reporting ? (
+          <ReportDialog
+            person={{ id: mentor.userId, name: mentorDisplayName(mentor) }}
+            onClose={() => setReporting(false)}
+          />
+        ) : null}
       </header>
 
       <section className="mt-10">

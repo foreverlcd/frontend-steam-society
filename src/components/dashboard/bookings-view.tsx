@@ -6,6 +6,7 @@ import { Alert } from "@/components/ui/alert";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ReportDialog } from "@/components/safety/report-dialog";
 import { Spinner } from "@/components/ui/spinner";
 import {
   acceptBooking,
@@ -125,6 +126,7 @@ export function BookingsView() {
   const [meetingUrls, setMeetingUrls] = useState<Record<string, string>>({});
   const [loadingMore, setLoadingMore] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+  const [reporting, setReporting] = useState<Booking | null>(null);
   // null while the payments config is loading.
   const [paymentsEnabled, setPaymentsEnabled] = useState<boolean | null>(null);
 
@@ -512,6 +514,16 @@ export function BookingsView() {
               </p>
             ) : null}
 
+            <div className="mt-3 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setReporting(booking)}
+                className="text-muted hover:text-danger-700 text-xs underline"
+              >
+                Reportar o bloquear
+              </button>
+            </div>
+
             {role === "mentor" && booking.status === "requested" ? (
               <div className="mt-4 space-y-2">
                 <div className="max-w-md space-y-1.5">
@@ -648,6 +660,20 @@ export function BookingsView() {
           </li>
         ))}
       </ul>
+
+      {reporting ? (
+        <ReportDialog
+          person={{
+            id: role === "mentee" ? reporting.mentor.id : reporting.mentee.id,
+            name: counterpartName(reporting, role),
+          }}
+          bookingId={reporting.id}
+          onClose={() => setReporting(null)}
+          onBlocked={(cancelled) => {
+            if (cancelled > 0) setReloadKey((key) => key + 1);
+          }}
+        />
+      ) : null}
 
       {nextCursor ? (
         <div className="mt-6 flex justify-center">
