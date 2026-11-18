@@ -76,6 +76,11 @@ El arnés completo está en `../backend-steam-society/docs/HARNESS.md`: roles, d
 - `GET /admin/mentors`: bandeja paginada por cursor; filtros `status`, `limit` y `cursor`.
 - `GET /admin/mentors/:id`: `{ mentor, onboarding }` con perfil, `minNoticeHours`, `maxAdvanceDays`, áreas, idiomas y onboarding completo.
 - `POST /admin/mentors/:id/approve|reject|suspend|reactivate`: acciones de revisión; `reject` exige `{ reason }`.
+- `GET /admin/overview`: números del piloto para el Resumen (cuentas por rol/estado, reservas de 30 días, reportes abiertos, correos).
+- `GET /admin/users?q&role&status&limit&cursor`, `GET /admin/users/:id`: personas con conteos e historial.
+- `POST /admin/users/:id/suspend` (`{ reason }`, 3..500) y `POST /admin/users/:id/reactivate`.
+- `GET /admin/bookings?status&userId&from&to&limit&cursor` y `POST /admin/bookings/:id/cancel` (`{ reason }`, 3..500; avisa a ambas personas).
+- `GET /admin/reports?status&limit&cursor`, `GET /admin/reports/:id` y `POST /admin/reports/:id/resolve` (`{ action: dismiss|warn|suspend, note }`).
 - `GET /payments/config`: `{ enabled, provider }`; si `enabled` es `false` no se muestra el botón Pagar.
 - `POST /payments/checkout`: `{ bookingId }` → `{ checkoutUrl, … }`; el navegador redirige a `checkoutUrl`.
 - `POST /payments/webhooks/fake`: solo desarrollo (`PAYMENTS_PROVIDER=fake`); lo usa `/payments/fake-checkout`.
@@ -85,7 +90,8 @@ El arnés completo está en `../backend-steam-society/docs/HARNESS.md`: roles, d
 - `/mentors` y `/mentors/[id]`: catálogo, detalle, slots y solicitud de reserva.
 - `/dashboard`: onboarding, recomendaciones y accesos rápidos por rol.
 - `/dashboard/offerings`, `/dashboard/availability`, `/dashboard/bookings` y `/dashboard/profile`: programación, reservas y perfil.
-- `/admin`: revisión de mentoras.
+- `/admin`: Resumen con las colas que requieren atención.
+- `/admin/reports`, `/admin/mentors`, `/admin/people` y `/admin/bookings`: moderación de reportes, revisión de mentoras, personas (suspender/reactivar) y reservas (cancelar).
 
 Las reservas de pago quedan en `awaiting_payment` hasta que el módulo de pagos acredita el cobro. Con `PAYMENTS_PROVIDER=disabled` (piloto) no hay botón Pagar; con `fake` el pago se simula en `/payments/fake-checkout`. La reserva grupal aún no está disponible en el backend. `noShowParty` es la persona ausente; el enlace de sesión debe ser `https://`.
 

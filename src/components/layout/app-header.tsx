@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
@@ -12,6 +12,7 @@ import { homePathForRole, roleLabel } from "@/lib/auth/roles";
 export function AppHeader() {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [loggingOut, setLoggingOut] = useState(false);
 
   if (!user) {
@@ -49,7 +50,11 @@ export function AppHeader() {
           className="hidden items-center gap-1 sm:flex"
         >
           {navItems.map((item) => (
-            <NavLink key={item.href} href={item.href}>
+            <NavLink
+              key={item.href}
+              href={item.href}
+              active={isActive(pathname, item.href, homePath)}
+            >
               {item.label}
             </NavLink>
           ))}
@@ -83,7 +88,12 @@ export function AppHeader() {
         className="border-line mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto border-t px-3 sm:hidden"
       >
         {navItems.map((item) => (
-          <NavLink key={item.href} href={item.href} className="shrink-0">
+          <NavLink
+            key={item.href}
+            href={item.href}
+            active={isActive(pathname, item.href, homePath)}
+            className="shrink-0"
+          >
             {item.label}
           </NavLink>
         ))}
@@ -97,9 +107,38 @@ interface NavItem {
   label: string;
 }
 
+/** Home links match exactly; section links also match their sub-pages. */
+function isActive(
+  pathname: string | null,
+  href: string,
+  homePath: string,
+): boolean {
+  if (!pathname) {
+    return false;
+  }
+
+  if (href === homePath) {
+    return pathname === href;
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 function navItemsForRole(role: string, homePath: string): NavItem[] {
-  const home = { href: homePath, label: role === "admin" ? "Panel" : "Inicio" };
   const security = { href: "/account/security", label: "Seguridad" };
+
+  if (role === "admin") {
+    return [
+      { href: homePath, label: "Resumen" },
+      { href: "/admin/reports", label: "Reportes" },
+      { href: "/admin/mentors", label: "Mentoras" },
+      { href: "/admin/people", label: "Personas" },
+      { href: "/admin/bookings", label: "Reservas" },
+      security,
+    ];
+  }
+
+  const home = { href: homePath, label: "Inicio" };
 
   if (role === "mentee") {
     return [
@@ -128,17 +167,21 @@ function navItemsForRole(role: string, homePath: string): NavItem[] {
 function NavLink({
   href,
   children,
+  active = false,
   className,
 }: {
   href: string;
   children: string;
+  active?: boolean;
   className?: string;
 }) {
   return (
     <Link
       href={href}
+      aria-current={active ? "page" : undefined}
       className={cn(
         "text-muted hover:bg-brand-50 hover:text-ink inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium whitespace-nowrap transition sm:min-h-0 sm:py-2",
+        active && "bg-brand-50 text-brand-700",
         className,
       )}
     >
