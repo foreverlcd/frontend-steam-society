@@ -4,6 +4,8 @@ const CODE_MESSAGES: Record<string, string> = {
   AUTH_REQUIRED: "Tu sesión expiró. Inicia sesión de nuevo.",
   EMAIL_TAKEN: "Ese correo ya está registrado.",
   INVALID_BIRTH_DATE: "La fecha de nacimiento no puede estar en el futuro.",
+  GUARDIAN_CONSENT_REQUIRED:
+    "Si tienes menos de 14 años, necesitas la autorización de tu madre, padre o tutor.",
   INVALID_CREDENTIALS: "Correo o contraseña incorrectos.",
   INVALID_RESET_TOKEN:
     "El enlace de recuperación no es válido o ya expiró. Solicita uno nuevo.",

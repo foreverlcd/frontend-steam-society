@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import Link from "next/link";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/text-field";
 import { getErrorMessage } from "@/lib/api/errors";
 import type { PublicRole } from "@/lib/api/types";
+import { needsGuardianConsent } from "@/lib/auth/age";
 import { useAuth } from "@/lib/auth/auth-context";
 import { cn } from "@/lib/cn";
 
@@ -43,10 +45,13 @@ export function RegisterForm() {
   const [birthDate, setBirthDate] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [guardianConsent, setGuardianConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const maxBirthDate = todayIsoDate();
+  const askGuardian = needsGuardianConsent(birthDate, maxBirthDate);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -79,6 +84,20 @@ export function RegisterForm() {
       return;
     }
 
+    if (askGuardian && !guardianConsent) {
+      setError(
+        "Si tienes menos de 14 años, tu madre, padre o tutor debe autorizar tu registro.",
+      );
+      return;
+    }
+
+    if (!acceptTerms) {
+      setError(
+        "Para crear tu cuenta, acepta los términos y la política de privacidad.",
+      );
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -89,6 +108,8 @@ export function RegisterForm() {
         birthDate,
         firstName: firstName.trim() || undefined,
         lastName: lastName.trim() || undefined,
+        acceptTerms: true,
+        guardianConsent: askGuardian ? true : undefined,
       });
     } catch (caught) {
       setError(getErrorMessage(caught));
@@ -193,11 +214,73 @@ export function RegisterForm() {
         />
       </div>
 
+      <div className="space-y-3">
+        {askGuardian ? (
+          <ConsentCheckbox
+            id="guardianConsent"
+            checked={guardianConsent}
+            onChange={setGuardianConsent}
+          >
+            Tengo menos de 14 años y mi madre, padre o tutor leyó la{" "}
+            <PolicyLink href="/privacidad">política de privacidad</PolicyLink> y
+            autoriza mi registro.
+          </ConsentCheckbox>
+        ) : null}
+        <ConsentCheckbox
+          id="acceptTerms"
+          checked={acceptTerms}
+          onChange={setAcceptTerms}
+        >
+          Acepto los <PolicyLink href="/terminos">términos</PolicyLink> y la{" "}
+          <PolicyLink href="/privacidad">política de privacidad</PolicyLink>, y
+          autorizo el uso de mis datos para usar Steam Society.
+        </ConsentCheckbox>
+      </div>
+
       {error ? <Alert tone="error">{error}</Alert> : null}
 
       <Button type="submit" size="lg" className="w-full" loading={submitting}>
         Crear cuenta
       </Button>
     </form>
+  );
+}
+
+function ConsentCheckbox({
+  id,
+  checked,
+  onChange,
+  children,
+}: {
+  id: string;
+  checked: boolean;
+  onChange: (value: boolean) => void;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <input
+        id={id}
+        type="checkbox"
+        checked={checked}
+        onChange={(event) => onChange(event.target.checked)}
+        className="accent-brand-600 mt-0.5 size-4 shrink-0"
+      />
+      <label htmlFor={id} className="text-muted text-sm leading-6">
+        {children}
+      </label>
+    </div>
+  );
+}
+
+function PolicyLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link
+      href={href}
+      target="_blank"
+      className="text-brand-700 font-medium underline"
+    >
+      {children}
+    </Link>
   );
 }

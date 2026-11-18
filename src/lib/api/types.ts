@@ -50,6 +50,10 @@ export interface RegisterInput {
   birthDate: string;
   firstName?: string;
   lastName?: string;
+  /** Accepts the privacy notice and terms (always true; the API rejects false). */
+  acceptTerms: true;
+  /** Parent or guardian authorized it; required by the API under 14. */
+  guardianConsent?: boolean;
 }
 
 export interface LoginInput {

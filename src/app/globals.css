@@ -58,3 +58,30 @@
     text-wrap: balance;
   }
 }
+
+@layer components {
+  .legal-prose ul {
+    @apply list-disc space-y-1.5 pl-5;
+  }
+
+  .legal-prose a {
+    @apply text-brand-700 underline;
+  }
+
+  .legal-prose strong {
+    @apply text-ink font-semibold;
+  }
+
+  .legal-prose table {
+    @apply w-full border-collapse text-left text-sm;
+  }
+
+  .legal-prose th,
+  .legal-prose td {
+    @apply border-line border-b py-2 pr-4 align-top;
+  }
+
+  .legal-prose th {
+    @apply text-ink font-semibold;
+  }
+}

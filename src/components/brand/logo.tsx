@@ -21,7 +21,7 @@ export function Logo({
       {markOnly ? null : (
         <span
           className={cn(
-            "text-[1.05rem] font-semibold tracking-tight",
+            "text-[1.05rem] font-semibold tracking-tight whitespace-nowrap",
             tone === "light" ? "text-white" : "text-ink",
           )}
         >

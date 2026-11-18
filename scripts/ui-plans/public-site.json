@@ -1,0 +1,17 @@
+[
+  { "viewport": [1280, 800] },
+  { "logout": true },
+  { "name": "01-home", "path": "/" },
+  { "name": "02-para-mentees", "path": "/para-mentees" },
+  { "name": "03-para-mentoras", "path": "/para-mentoras" },
+  { "name": "04-privacidad", "path": "/privacidad" },
+  { "name": "05-terminos", "path": "/terminos" },
+  { "name": "06-cookies", "path": "/cookies" },
+  { "name": "07-register", "path": "/register" },
+  { "name": "08-help", "path": "/help" },
+  { "viewport": [390, 844] },
+  { "name": "09-mobile-home", "path": "/" },
+  { "name": "10-mobile-para-mentoras", "path": "/para-mentoras" },
+  { "name": "11-mobile-privacidad", "path": "/privacidad" },
+  { "name": "12-mobile-register", "path": "/register" }
+]
