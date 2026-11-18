@@ -12,6 +12,9 @@
 //   WEB_URL      default http://localhost:3001
 //   API_URL      default http://localhost:3000/v1
 //   OUT_DIR      default .shots/<plan-name>  (gitignored)
+//   CHROME_EXTRA_ARGS  extra browser flags, space separated (e.g. the fake
+//                camera for calls: --use-fake-ui-for-media-stream
+//                --use-fake-device-for-media-stream)
 //   DEMO_PASSWORD  used by "login" steps; never write passwords in plans.
 //
 // Plan format (JSON array). Each step is one of:
@@ -75,9 +78,12 @@ const browser = spawn(
     `--user-data-dir=${profile}`,
     "--no-first-run",
     "--hide-scrollbars",
+    ...(process.env.CHROME_EXTRA_ARGS ?? "").split(" ").filter(Boolean),
     "about:blank",
   ],
-  { stdio: "ignore" },
+  // Own process group: the binary may be a wrapper script, and killing only
+  // the wrapper would leave the real browser running.
+  { stdio: "ignore", detached: true },
 );
 
 let target;
@@ -204,8 +210,19 @@ try {
   }
 } finally {
   ws.close();
-  browser.kill();
-  fs.rmSync(profile, { recursive: true, force: true });
+  try {
+    process.kill(-browser.pid, "SIGTERM");
+  } catch {
+    browser.kill();
+  }
+  // The dying browser may still write to its profile for a moment.
+  await sleep(500);
+  fs.rmSync(profile, {
+    recursive: true,
+    force: true,
+    maxRetries: 10,
+    retryDelay: 200,
+  });
 }
 
 fs.writeFileSync(path.join(OUT, "report.txt"), report.join("\n") + "\n");
