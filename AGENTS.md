@@ -74,6 +74,7 @@ El arnés completo está en `../backend-steam-society/docs/HARNESS.md`: roles, d
 - `GET|PUT /me/availability`: franjas semanales de la mentora.
 - `POST /bookings`, `GET /bookings`, `GET /bookings/:id`.
 - `POST /bookings/:id/accept|decline|cancel|complete|no-show`.
+- `GET /me/mfa`, `POST /me/mfa/totp/setup` (`{ password }`: la contraseña otra vez, para que una sesión robada no pueda atar otra app), `POST /me/mfa/totp/confirm` (`{ code }`; avisa por correo), `POST /me/mfa/recovery-codes` y `POST /me/mfa/disable` (`{ password, code }`).
 - `GET /admin/mentors`: bandeja paginada por cursor; filtros `status`, `limit` y `cursor`.
 - `GET /admin/mentors/:id`: `{ mentor, onboarding }` con perfil, `minNoticeHours`, `maxAdvanceDays`, áreas, idiomas y onboarding completo.
 - `POST /admin/mentors/:id/approve|reject|suspend|reactivate`: acciones de revisión; `reject` exige `{ reason }`.

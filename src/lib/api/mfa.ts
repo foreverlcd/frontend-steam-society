@@ -5,8 +5,12 @@ export function getMfaStatus(signal?: AbortSignal): Promise<MfaStatus> {
   return apiFetch<MfaStatus>("/me/mfa", { signal });
 }
 
-export function startTotpSetup(): Promise<TotpSetup> {
-  return apiFetch<TotpSetup>("/me/mfa/totp/setup", { method: "POST" });
+/** Needs the password again, so a stolen session can't bind another app. */
+export function startTotpSetup(password: string): Promise<TotpSetup> {
+  return apiFetch<TotpSetup>("/me/mfa/totp/setup", {
+    method: "POST",
+    json: { password },
+  });
 }
 
 /** Confirms the setup; the recovery codes are shown only this once. */

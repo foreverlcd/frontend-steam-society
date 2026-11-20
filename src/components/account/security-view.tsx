@@ -153,15 +153,21 @@ function StartSetupPanel({
 }: {
   onStarted: (setup: TotpSetup) => void;
 }) {
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  async function handleStart() {
+  async function handleStart(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!password) {
+      setError("Escribe tu contraseña para continuar.");
+      return;
+    }
     setSubmitting(true);
     setError(null);
 
     try {
-      onStarted(await startTotpSetup());
+      onStarted(await startTotpSetup(password));
     } catch (caught) {
       setError(getErrorMessage(caught));
     } finally {
@@ -181,14 +187,22 @@ function StartSetupPanel({
         Necesitas una app de autenticación gratuita en tu teléfono, como Google
         Authenticator, Microsoft Authenticator o Aegis.
       </p>
-      {error ? <Alert tone="error">{error}</Alert> : null}
-      <Button
-        type="button"
-        loading={submitting}
-        onClick={() => void handleStart()}
-      >
-        Activar
-      </Button>
+      <form onSubmit={handleStart} className="space-y-4" noValidate>
+        <TextField
+          id="mfa-setup-password"
+          label="Tu contraseña"
+          type="password"
+          autoComplete="current-password"
+          hint="La pedimos para confirmar que eres tú."
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          required
+        />
+        {error ? <Alert tone="error">{error}</Alert> : null}
+        <Button type="submit" loading={submitting}>
+          Activar
+        </Button>
+      </form>
     </Card>
   );
 }

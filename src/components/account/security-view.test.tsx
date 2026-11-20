@@ -85,7 +85,10 @@ describe("SecurityView", () => {
     expect(
       await screen.findByText(/Para usar el panel de administración/),
     ).toBeInTheDocument();
-    fireEvent.click(await screen.findByRole("button", { name: "Activar" }));
+    fireEvent.change(await screen.findByLabelText("Tu contraseña"), {
+      target: { value: "test-only-password" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Activar" }));
     fireEvent.change(await screen.findByLabelText("Código de la app"), {
       target: { value: "123456" },
     });
@@ -119,8 +122,12 @@ describe("SecurityView", () => {
     });
     renderView();
 
-    fireEvent.click(await screen.findByRole("button", { name: "Activar" }));
+    fireEvent.change(await screen.findByLabelText("Tu contraseña"), {
+      target: { value: "test-only-password" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Activar" }));
     expect(await screen.findByText("JBSW Y3DP EHPK 3PXP")).toBeInTheDocument();
+    expect(mfaMocks.startTotpSetup).toHaveBeenCalledWith("test-only-password");
     expect(
       screen.getByRole("link", { name: /abre este enlace/i }),
     ).toHaveAttribute("href", expect.stringContaining("otpauth://"));
@@ -134,6 +141,21 @@ describe("SecurityView", () => {
 
     expect(await screen.findByText("AAAAA-BBBBB")).toBeInTheDocument();
     expect(mfaMocks.confirmTotpSetup).toHaveBeenCalledWith("123456");
+  });
+
+  it("asks for the password before showing the key", async () => {
+    mfaMocks.getMfaStatus.mockResolvedValue({
+      enabled: false,
+      required: false,
+      recoveryCodesRemaining: 0,
+    });
+    renderView();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Activar" }));
+    expect(
+      await screen.findByText("Escribe tu contraseña para continuar."),
+    ).toBeInTheDocument();
+    expect(mfaMocks.startTotpSetup).not.toHaveBeenCalled();
   });
 
   it("hides the disable action for roles that must keep 2FA", async () => {
