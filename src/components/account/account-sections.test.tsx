@@ -46,6 +46,7 @@ const user = {
   birthDate: "1990-01-01",
   emailVerified: true,
   mfaEnabled: false,
+  guardianConsentPending: false,
 };
 
 const sessions = [
@@ -246,6 +247,7 @@ describe("AccountSections", () => {
       ...user,
       role: "admin",
       mfaEnabled: true,
+      guardianConsentPending: false,
     });
     renderSections();
 

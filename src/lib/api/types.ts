@@ -15,6 +15,11 @@ export interface AuthUser {
   emailVerified: boolean;
   /** True when an authenticator app is enrolled and confirmed. */
   mfaEnabled: boolean;
+  /**
+   * Under 14 and the parent or guardian has not authorized yet from the
+   * e-mailed link: booking and submitting a profile are blocked until then.
+   */
+  guardianConsentPending: boolean;
 }
 
 /** POST /auth/login answers with the user, or asks for the second factor. */
@@ -52,8 +57,10 @@ export interface RegisterInput {
   lastName?: string;
   /** Accepts the privacy notice and terms (always true; the API rejects false). */
   acceptTerms: true;
-  /** Parent or guardian authorized it; required by the API under 14. */
+  /** The under-14 user says an adult is aware; required by the API. */
   guardianConsent?: boolean;
+  /** Address of the adult who confirms from a link; required under 14. */
+  guardianEmail?: string;
 }
 
 export interface LoginInput {

@@ -47,6 +47,7 @@ export function RegisterForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [guardianConsent, setGuardianConsent] = useState(false);
+  const [guardianEmail, setGuardianEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -84,6 +85,23 @@ export function RegisterForm() {
       return;
     }
 
+    const trimmedGuardianEmail = guardianEmail.trim();
+    if (askGuardian) {
+      if (
+        !trimmedGuardianEmail ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedGuardianEmail)
+      ) {
+        setError("Ingresa un correo válido de tu madre, padre o tutor.");
+        return;
+      }
+      if (trimmedGuardianEmail.toLowerCase() === trimmedEmail.toLowerCase()) {
+        setError(
+          "El correo de tu madre, padre o tutor debe ser distinto del tuyo.",
+        );
+        return;
+      }
+    }
+
     if (askGuardian && !guardianConsent) {
       setError(
         "Si tienes menos de 14 años, tu madre, padre o tutor debe autorizar tu registro.",
@@ -110,6 +128,7 @@ export function RegisterForm() {
         lastName: lastName.trim() || undefined,
         acceptTerms: true,
         guardianConsent: askGuardian ? true : undefined,
+        guardianEmail: askGuardian ? trimmedGuardianEmail : undefined,
       });
     } catch (caught) {
       setError(getErrorMessage(caught));
@@ -214,6 +233,20 @@ export function RegisterForm() {
         />
       </div>
 
+      {askGuardian ? (
+        <TextField
+          id="guardianEmail"
+          label="Correo de tu madre, padre o tutor"
+          type="email"
+          autoComplete="off"
+          inputMode="email"
+          hint="Le enviaremos un enlace para que autorice tu cuenta. Hasta entonces no podrás reservar sesiones."
+          value={guardianEmail}
+          onChange={(event) => setGuardianEmail(event.target.value)}
+          required
+        />
+      ) : null}
+
       <div className="space-y-3">
         {askGuardian ? (
           <ConsentCheckbox
@@ -221,9 +254,8 @@ export function RegisterForm() {
             checked={guardianConsent}
             onChange={setGuardianConsent}
           >
-            Tengo menos de 14 años y mi madre, padre o tutor leyó la{" "}
-            <PolicyLink href="/privacidad">política de privacidad</PolicyLink> y
-            autoriza mi registro.
+            Tengo menos de 14 años y mi madre, padre o tutor sabe que me
+            registro. Entiendo que debe autorizar mi cuenta desde el correo.
           </ConsentCheckbox>
         ) : null}
         <ConsentCheckbox

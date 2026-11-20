@@ -4,6 +4,8 @@ import { ResetPasswordForm } from "@/components/auth/reset-password-form";
 
 export const metadata: Metadata = {
   title: "Nueva contraseña",
+  // The URL carries a single-use token: never send it as a Referer.
+  referrer: "no-referrer",
 };
 
 // The session is resolved client-side from an HttpOnly cookie.

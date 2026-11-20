@@ -24,6 +24,7 @@ const user = {
   birthDate: "2000-01-01",
   emailVerified: false,
   mfaEnabled: false,
+  guardianConsentPending: false,
 };
 
 describe("EmailVerificationBanner", () => {

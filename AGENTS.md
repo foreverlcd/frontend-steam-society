@@ -74,6 +74,7 @@ El arnés completo está en `../backend-steam-society/docs/HARNESS.md`: roles, d
 - `GET|PUT /me/availability`: franjas semanales de la mentora.
 - `POST /bookings`, `GET /bookings`, `GET /bookings/:id`.
 - `POST /bookings/:id/accept|decline|cancel|complete|no-show`.
+- Menores de 14: `POST /auth/register` exige `guardianEmail` (distinto del propio) además de `guardianConsent: true`; `/me` trae `guardianConsentPending` (mientras sea `true`, reservar y enviar perfil dan `403 GUARDIAN_CONSENT_PENDING`; aviso `GuardianConsentBanner`). El adulto autoriza en la página pública `/guardian-consent?token=` con un clic (`POST /auth/guardian-consent/confirm`); la usuaria reenvía o corrige el correo con `POST /me/guardian-consent/resend` (`{ guardianEmail? }`).
 - `GET /me/mfa`, `POST /me/mfa/totp/setup` (`{ password }`: la contraseña otra vez, para que una sesión robada no pueda atar otra app), `POST /me/mfa/totp/confirm` (`{ code }`; avisa por correo), `POST /me/mfa/recovery-codes` y `POST /me/mfa/disable` (`{ password, code }`).
 - `GET /admin/mentors`: bandeja paginada por cursor; filtros `status`, `limit` y `cursor`.
 - `GET /admin/mentors/:id`: `{ mentor, onboarding }` con perfil, `minNoticeHours`, `maxAdvanceDays`, áreas, idiomas y onboarding completo.
