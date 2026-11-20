@@ -38,6 +38,22 @@ export interface ChatMessage {
 /** Longest chat message accepted, in characters. */
 export const CHAT_MAX_LENGTH = 1000;
 
+/** Messages kept on screen; older ones drop off so a flood can't freeze the tab. */
+export const CHAT_HISTORY_LIMIT = 200;
+
+/** Incoming messages accepted per second from the peer; the rest are dropped. */
+export const CHAT_RATE_PER_SECOND = 5;
+
+export function appendChat(
+  current: ChatMessage[],
+  message: ChatMessage,
+): ChatMessage[] {
+  const next = [...current, message];
+  return next.length > CHAT_HISTORY_LIMIT
+    ? next.slice(next.length - CHAT_HISTORY_LIMIT)
+    : next;
+}
+
 /**
  * 1:1 WebRTC call with "perfect negotiation": both sides may offer at any
  * time and the polite one (the mentee) yields on collisions. Signals go
@@ -55,6 +71,7 @@ export function useCall(info: CallInfo, localStream: MediaStream | null) {
   const localRef = useRef<MediaStream | null>(localStream);
   const screenRef = useRef<MediaStreamTrack | null>(null);
   const chatRef = useRef<RTCDataChannel | null>(null);
+  const chatWindow = useRef({ start: 0, count: 0 });
   const makingOffer = useRef(false);
   const ignoreOffer = useRef(false);
   const outbox = useRef<Promise<unknown>>(Promise.resolve());
@@ -123,8 +140,16 @@ export function useCall(info: CallInfo, localStream: MediaStream | null) {
     chat.onopen = () => setChatReady(true);
     chat.onclose = () => setChatReady(false);
     chat.onmessage = ({ data }) => {
+      const now = Date.now();
+      const rate = chatWindow.current;
+      if (now - rate.start >= 1000) {
+        rate.start = now;
+        rate.count = 0;
+      }
+      rate.count += 1;
+      if (rate.count > CHAT_RATE_PER_SECOND) return;
       const message = parseChat(data);
-      if (message) setMessages((current) => [...current, message]);
+      if (message) setMessages((current) => appendChat(current, message));
     };
 
     pc.ontrack = ({ track, streams }) => {
@@ -335,10 +360,14 @@ export function useCall(info: CallInfo, localStream: MediaStream | null) {
     if (!text || !chat || chat.readyState !== "open") return false;
     const sentAt = Date.now();
     chat.send(JSON.stringify({ text, sentAt }));
-    setMessages((current) => [
-      ...current,
-      { id: crypto.randomUUID(), from: "me", text, sentAt },
-    ]);
+    setMessages((current) =>
+      appendChat(current, {
+        id: crypto.randomUUID(),
+        from: "me",
+        text,
+        sentAt,
+      }),
+    );
     return true;
   }, []);
 
