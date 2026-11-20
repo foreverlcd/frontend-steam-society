@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { CHAT_MAX_LENGTH, parseChat } from "./use-call";
+import {
+  CHAT_HISTORY_LIMIT,
+  CHAT_MAX_LENGTH,
+  appendChat,
+  parseChat,
+  type ChatMessage,
+} from "./use-call";
 
 describe("parseChat", () => {
   it("accepts a text message from the peer", () => {
@@ -21,5 +27,22 @@ describe("parseChat", () => {
     expect(parseChat(JSON.stringify({ text }))?.text).toHaveLength(
       CHAT_MAX_LENGTH,
     );
+  });
+});
+
+describe("appendChat", () => {
+  it("keeps only the latest messages", () => {
+    const message = (n: number): ChatMessage => ({
+      id: String(n),
+      from: "peer",
+      text: `m${n}`,
+      sentAt: n,
+    });
+    let list: ChatMessage[] = [];
+    for (let n = 0; n < CHAT_HISTORY_LIMIT + 5; n += 1) {
+      list = appendChat(list, message(n));
+    }
+    expect(list).toHaveLength(CHAT_HISTORY_LIMIT);
+    expect(list[0]?.id).toBe("5");
   });
 });

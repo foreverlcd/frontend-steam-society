@@ -230,7 +230,15 @@ export function BookingsView() {
 
     try {
       const checkout = await startCheckout(booking.id);
-      window.location.assign(checkout.checkoutUrl);
+      // Only leave the site for an https checkout (or our own fake one).
+      const target = new URL(checkout.checkoutUrl, window.location.origin);
+      if (
+        target.protocol !== "https:" &&
+        target.origin !== window.location.origin
+      ) {
+        throw new Error("Unsafe checkout URL");
+      }
+      window.location.assign(target.toString());
     } catch (caught: unknown) {
       if (isUnauthorized(caught)) {
         void refresh();
