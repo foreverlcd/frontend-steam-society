@@ -88,7 +88,10 @@ const SECTIONS: LegalSection[] = [
               versión) y, si tienes menos de 14 años, el correo de tu madre,
               padre o tutor y la fecha en que autorizó tu cuenta
             </td>
-            <td>Se guarda al registrarte</td>
+            <td>
+              Al registrarte; la fecha de la autorización, cuando tu madre,
+              padre o tutor la da
+            </td>
           </tr>
         </tbody>
       </table>
