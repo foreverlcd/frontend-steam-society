@@ -24,6 +24,7 @@ const user = {
   birthDate: "2000-01-01",
   emailVerified: true,
   mfaEnabled: false,
+  guardianConsentPending: false,
 };
 
 describe("LoginForm", () => {
@@ -84,6 +85,7 @@ describe("LoginForm", () => {
     authMocks.loginWithSecondFactor.mockResolvedValue({
       ...user,
       mfaEnabled: true,
+      guardianConsentPending: false,
     });
     render(
       <AuthProvider>

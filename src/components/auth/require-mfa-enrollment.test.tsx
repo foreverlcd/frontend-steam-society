@@ -25,6 +25,7 @@ const admin = {
   birthDate: null,
   emailVerified: true,
   mfaEnabled: false,
+  guardianConsentPending: false,
 };
 
 function renderGuard() {

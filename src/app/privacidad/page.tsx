@@ -85,8 +85,8 @@ const SECTIONS: LegalSection[] = [
           <tr>
             <td>
               Constancia de que aceptaste esta política y los términos (fecha y
-              versión) y, si corresponde, la autorización de tu madre, padre o
-              tutor
+              versión) y, si tienes menos de 14 años, el correo de tu madre,
+              padre o tutor y la fecha en que autorizó tu cuenta
             </td>
             <td>Se guarda al registrarte</td>
           </tr>
@@ -151,9 +151,11 @@ const SECTIONS: LegalSection[] = [
         <p>
           Steam Society no tiene una edad mínima. Si tienes menos de 14 años, la
           ley exige que tu madre, padre o tutor autorice el tratamiento de tus
-          datos; te lo pedimos al registrarte. Si eres madre, padre o tutor y
-          crees que una persona menor de 14 años se registró sin tu
-          autorización, escríbenos a <Contact /> y eliminaremos la cuenta.
+          datos. Al registrarte nos das su correo y le enviamos un enlace para
+          que lea esta política y autorice tu cuenta. Hasta que lo haga, no
+          puedes reservar sesiones. Si eres madre, padre o tutor y crees que una
+          persona menor de 14 años se registró sin tu autorización, escríbenos a{" "}
+          <Contact /> y eliminaremos la cuenta.
         </p>
         <p>
           A las personas de 14 a 17 años les pedimos solo los datos necesarios y

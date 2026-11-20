@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { EmailVerificationBanner } from "@/components/auth/email-verification-banner";
+import { GuardianConsentBanner } from "@/components/auth/guardian-consent-banner";
 import { RequireAuth } from "@/components/auth/require-auth";
 import { AppHeader } from "@/components/layout/app-header";
 
@@ -13,6 +14,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       <div className="min-h-dvh">
         <AppHeader />
         <EmailVerificationBanner />
+        <GuardianConsentBanner />
         <main>{children}</main>
       </div>
     </RequireAuth>

@@ -43,6 +43,7 @@ const user = {
   birthDate: "1990-01-01",
   emailVerified: true,
   mfaEnabled: false,
+  guardianConsentPending: false,
 };
 
 function renderView() {
@@ -67,6 +68,7 @@ describe("SecurityView", () => {
       ...user,
       role: "admin",
       mfaEnabled: true,
+      guardianConsentPending: false,
     });
     mfaMocks.getMfaStatus.mockResolvedValue({
       enabled: false,

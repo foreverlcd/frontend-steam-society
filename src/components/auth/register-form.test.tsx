@@ -61,13 +61,29 @@ describe("RegisterForm consent", () => {
     expect(authMocks.register.mock.calls[0][0]).toMatchObject({
       acceptTerms: true,
       guardianConsent: undefined,
+      guardianEmail: undefined,
     });
   });
 
-  it("asks a guardian under 14 and sends the consent", async () => {
+  it("asks for the guardian e-mail and consent under 14", async () => {
     const year = new Date().getFullYear() - 10;
     fill(`${year}-01-01`);
     fireEvent.click(screen.getByLabelText(/Acepto los/));
+    fireEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
+    expect(
+      await screen.findByText(/correo válido de tu madre, padre o tutor/),
+    ).toBeTruthy();
+
+    const guardianField = screen.getByLabelText(
+      "Correo de tu madre, padre o tutor",
+    );
+    fireEvent.change(guardianField, { target: { value: "new@example.com" } });
+    fireEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
+    expect(await screen.findByText(/distinto del tuyo/)).toBeTruthy();
+
+    fireEvent.change(guardianField, {
+      target: { value: "parent@example.com" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
     expect(await screen.findByText(/debe autorizar tu registro/)).toBeTruthy();
 
@@ -78,6 +94,7 @@ describe("RegisterForm consent", () => {
     expect(authMocks.register.mock.calls[0][0]).toMatchObject({
       acceptTerms: true,
       guardianConsent: true,
+      guardianEmail: "parent@example.com",
     });
   });
 });

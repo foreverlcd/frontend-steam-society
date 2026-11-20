@@ -6,6 +6,15 @@ const CODE_MESSAGES: Record<string, string> = {
   INVALID_BIRTH_DATE: "La fecha de nacimiento no puede estar en el futuro.",
   GUARDIAN_CONSENT_REQUIRED:
     "Si tienes menos de 14 años, necesitas la autorización de tu madre, padre o tutor.",
+  GUARDIAN_EMAIL_REQUIRED:
+    "Escribe el correo de tu madre, padre o tutor para que autorice tu cuenta.",
+  GUARDIAN_EMAIL_SAME_AS_USER:
+    "El correo de tu madre, padre o tutor debe ser distinto del tuyo.",
+  GUARDIAN_CONSENT_PENDING:
+    "Tu madre, padre o tutor aún no autoriza tu cuenta. Pídele que abra el enlace que le enviamos.",
+  GUARDIAN_CONSENT_NOT_PENDING: "Tu cuenta ya está autorizada.",
+  INVALID_GUARDIAN_TOKEN:
+    "El enlace de autorización no es válido, ya se usó o expiró. Pide a quien se registró que envíe uno nuevo.",
   INVALID_CREDENTIALS: "Correo o contraseña incorrectos.",
   INVALID_RESET_TOKEN:
     "El enlace de recuperación no es válido o ya expiró. Solicita uno nuevo.",
